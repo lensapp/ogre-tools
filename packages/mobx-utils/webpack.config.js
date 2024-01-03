@@ -1,2 +1,2 @@
 module.exports =
-  require('@lensapp/infrastructure-webpack-for-js').webpackConfig;
+  require('@lensapp/infrastructure-webpack-for-ts').webpackConfig;

@@ -4,15 +4,14 @@
   "version": "18.1.0",
   "description": "A brutal component for injecting components that use injectable",
   "files": [
-    "build",
-    "index.d.ts"
+    "build"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/lensapp/ogre-tools"
   },
   "main": "build/index.js",
-  "types": "./index.d.ts",
+  "types": "./build/index.d.ts",
   "keywords": [
     "js",
     "functional-programming"
@@ -35,16 +34,15 @@
   },
   "prettier": "@lensapp/infrastructure-prettier",
   "scripts": {
-    "build": "ogre-tools-build-js",
+    "build": "ogre-tools-build-ts",
     "test": "ogre-tools-test",
-    "test:types": "tsd",
     "code-style:verify": "ogre-tools-verify-code-style",
     "code-style:fix": "ogre-tools-fix-code-style"
   },
   "devDependencies": {
-    "@lensapp/infrastructure-babel-for-js": "^18.1.0",
+    "@lensapp/infrastructure-babel-for-ts": "^18.1.0",
     "@lensapp/infrastructure-jest": "^18.1.0",
     "@lensapp/infrastructure-prettier": "^18.1.0",
-    "@lensapp/infrastructure-webpack-for-js": "^18.1.0"
+    "@lensapp/infrastructure-webpack-for-ts": "^18.1.0"
   }
 }
