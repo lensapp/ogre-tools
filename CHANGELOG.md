@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [18.4.2](https://github.com/lensapp/ogre-tools/compare/v18.4.1...v18.4.2) (2024-03-20)
+
+### Bug Fixes
+
+- Fix typing of register and deregistering to accept injectable bunches ([fdee440](https://github.com/lensapp/ogre-tools/commit/fdee440eb4fbe5168cd8434b2a5d11486f8d5239))
+
 ### [18.4.1](https://github.com/lensapp/ogre-tools/compare/v18.4.0...v18.4.1) (2024-02-12)
 
 ### Bug Fixes
