@@ -11,6 +11,7 @@ export interface WithInjectablesSyncOptions<
   Dependencies extends object,
   Props extends object,
 > {
+  getPlaceholder?: undefined;
   getProps: (di: DiContainer, props: Props) => Props & Dependencies;
 }
 
