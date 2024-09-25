@@ -42,9 +42,18 @@ export const withInjectables = (Component, { getPlaceholder = constant(null), ge
           const diForComponentContext = {
             inject: (alias, parameter) =>
               di.inject(alias, parameter, componentContext),
-
             injectMany: (injectionToken, parameter) =>
               di.injectMany(injectionToken, parameter, componentContext),
+            injectFactory: (injectionToken, parameter) =>
+              di.injectFactory(injectionToken, parameter, componentContext),
+            injectWithMeta: (injectionToken, parameter) =>
+              di.injectWithMeta(injectionToken, parameter, componentContext),
+            injectManyWithMeta: (injectionToken, parameter) =>
+              di.injectManyWithMeta(
+                injectionToken,
+                parameter,
+                componentContext,
+              ),
           };
 
           const maybeAsyncProps = getProps(diForComponentContext, props);

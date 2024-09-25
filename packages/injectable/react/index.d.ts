@@ -12,14 +12,14 @@ export interface WithInjectablesSyncOptions<
   Props extends object,
 > {
   getPlaceholder?: undefined;
-  getProps: (di: DiContainer, props: Props) => Props & Dependencies;
+  getProps: (di: DiContainerForInjection, props: Props) => Props & Dependencies;
 }
 
 export interface WithInjectablesAsyncOptions<
   Dependencies extends object,
   Props extends object,
 > {
-  getProps: (di: DiContainer, props: Props) => Promise<Props & Dependencies>;
+  getProps: (di: DiContainerForInjection, props: Props) => Promise<Props & Dependencies>;
   getPlaceholder: React.FunctionComponent<Props>;
 }
 
