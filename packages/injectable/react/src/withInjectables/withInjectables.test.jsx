@@ -10,11 +10,11 @@ import {
   lifecycleEnum,
 } from '@lensapp/injectable';
 
-import withInjectables, { DiContextProvider } from './withInjectables';
+import { withInjectables, DiContextProvider } from './withInjectables';
 import asyncFn from '@async-fn/jest';
 import { observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
-import registerInjectableReact from '../registerInjectableReact/registerInjectableReact';
+import {registerInjectableReact} from '../registerInjectableReact/registerInjectableReact';
 
 const flushPromises = () => new Promise(flushMicroTasks);
 

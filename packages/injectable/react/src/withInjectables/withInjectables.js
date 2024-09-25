@@ -16,7 +16,7 @@ export const componentNameMapInjectable = getInjectable({
   instantiate: () => new Map(),
 });
 
-export default (Component, { getPlaceholder = constant(null), getProps }) =>
+export const withInjectables = (Component, { getPlaceholder = constant(null), getProps }) =>
   React.memo(
     React.forwardRef((props, ref) => (
       <DiContextConsumer>
