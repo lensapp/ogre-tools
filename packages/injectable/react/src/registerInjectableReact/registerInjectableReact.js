@@ -1,5 +1,5 @@
 import { componentNameMapInjectable } from '../withInjectables/withInjectables';
 
-export default di => {
+export const registerInjectableReact = di => {
   di.register(componentNameMapInjectable);
 };

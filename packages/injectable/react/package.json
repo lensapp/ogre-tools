@@ -47,5 +47,8 @@
     "@lensapp/infrastructure-jest": "^19.0.0",
     "@lensapp/infrastructure-prettier": "^19.0.0",
     "@lensapp/infrastructure-webpack-for-js": "^19.0.0"
+  },
+  "dependencies": {
+    "mobx-utils": "^6.0.8"
   }
 }
