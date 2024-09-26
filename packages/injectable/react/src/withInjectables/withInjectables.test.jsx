@@ -14,22 +14,35 @@ import { withInjectables, DiContextProvider } from './withInjectables';
 import asyncFn from '@async-fn/jest';
 import { observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
-import {registerInjectableReact} from '../registerInjectableReact/registerInjectableReact';
+import { registerInjectableReact } from '../registerInjectableReact/registerInjectableReact';
 
 const flushPromises = () => new Promise(flushMicroTasks);
 
 const mountFor =
   di =>
-  (node, ...rest) =>
-    render(<DiContextProvider value={{ di }}>{node}</DiContextProvider>, {
-      ...rest,
-    });
+  (node, ...rest) => {
+    const renderResult = render(
+      <DiContextProvider value={{ di }}>{node}</DiContextProvider>,
+      {
+        ...rest,
+      },
+    );
+
+    return {
+      ...renderResult,
+      rerender: node =>
+        renderResult.rerender(
+          <DiContextProvider value={{ di }}>{node}</DiContextProvider>,
+        ),
+    };
+  };
 
 describe('withInjectables', () => {
   let di;
   let mount;
 
   beforeEach(() => {
+    jest.useFakeTimers();
     di = createContainer('some-container');
 
     registerInjectableReact(di);
@@ -142,9 +155,6 @@ describe('withInjectables', () => {
   it('given component and sync dependencies, when rendered, renders with dependencies', () => {
     const injectable = getInjectable({
       id: 'some-injectable-id',
-
-      lifecycle: lifecycleEnum.transient,
-
       instantiate: () => 'some-injectable-value',
     });
 
@@ -339,39 +349,50 @@ describe('withInjectables', () => {
   describe('given component, placeholder and async dependencies, when rendered', () => {
     let rendered;
     let asyncDependencyMock;
+    let SmartTestComponent;
 
     beforeEach(async () => {
       asyncDependencyMock = asyncFn();
 
-      const injectable = getInjectable({
+      const someAsyncDependencyInjectable = getInjectable({
         id: 'some-injectable-id',
-
-        lifecycle: lifecycleEnum.transient,
-
         instantiate: () => asyncDependencyMock(),
+        lifecycle: lifecycleEnum.keyedSingleton({
+          getInstanceKey: (di, someString) => someString,
+        }),
       });
 
-      di.register(injectable);
+      di.register(someAsyncDependencyInjectable);
 
-      const DumbTestComponent = ({ someDependency, ...props }) => (
-        <div data-testid="some-dumb-test-component" {...props}>
-          Some content: "{someDependency}"
-        </div>
-      );
+      const DumbTestComponent = ({ someDependency, ...props }) => {
+        const propsToPass = Object.fromEntries(
+          Object.entries(props).filter(([key]) => key.startsWith('data-')),
+        );
 
-      const SmartTestComponent = withInjectables(DumbTestComponent, {
+        return (
+          <div data-testid="some-dumb-test-component" {...propsToPass}>
+            Some content: "{someDependency}"
+          </div>
+        );
+      };
+
+      SmartTestComponent = withInjectables(DumbTestComponent, {
         getProps: async (di, props) => ({
-          someDependency: await di.inject(injectable),
+          someDependency: await di.inject(
+            someAsyncDependencyInjectable,
+            props.someString,
+          ),
           ...props,
         }),
-
         getPlaceholder: () => <div data-testid="some-placeholder" />,
       });
 
-      rendered = mount(<SmartTestComponent data-some-prop-test />);
+      rendered = mount(
+        <SmartTestComponent data-some-prop-test someString="a-value" />,
+      );
     });
 
-    it('renders as placeholder', () => {
+    it('renders', () => {
       expect(rendered.baseElement).toMatchSnapshot();
     });
 
@@ -413,6 +434,76 @@ describe('withInjectables', () => {
           rendered.queryByTestId('some-placeholder'),
         ).not.toBeInTheDocument();
       });
+
+      describe("when rerendering the component with different props (but the dependency doesn't change", () => {
+        beforeEach(async () => {
+          act(() => {
+            rendered.rerender(
+              <SmartTestComponent
+                data-some-new-prop-test
+                someString="a-value"
+              />,
+            );
+          });
+          await act(async () => {
+            await jest.advanceTimersByTimeAsync(0);
+          });
+        });
+
+        it('renders', () => {
+          expect(rendered.baseElement).toMatchSnapshot();
+        });
+
+        it('has component with async content', () => {
+          expect(rendered.baseElement).toHaveTextContent(
+            'Some content: "some-async-value"',
+          );
+        });
+
+        it('has component', () => {
+          expect(
+            rendered.queryByTestId('some-dumb-test-component'),
+          ).toBeInTheDocument();
+        });
+
+        it('no longer has placeholder', () => {
+          expect(
+            rendered.queryByTestId('some-placeholder'),
+          ).not.toBeInTheDocument();
+        });
+      });
+
+      describe('when rerendering the component with different props (which cause the dependency to change', () => {
+        beforeEach(async () => {
+          act(() => {
+            rendered.rerender(
+              <SmartTestComponent
+                data-some-new-prop-test
+                someString="a-different-value"
+              />,
+            );
+          });
+          await act(async () => {
+            await jest.advanceTimersByTimeAsync(0);
+          });
+        });
+
+        it('renders', () => {
+          expect(rendered.baseElement).toMatchSnapshot();
+        });
+
+        it('does not render component yet', () => {
+          expect(
+            rendered.queryByTestId('some-dumb-test-component'),
+          ).not.toBeInTheDocument();
+        });
+
+        it('has placeholder', () => {
+          expect(
+            rendered.queryByTestId('some-placeholder'),
+          ).toBeInTheDocument();
+        });
+      });
     });
   });
 
@@ -425,9 +516,6 @@ describe('withInjectables', () => {
 
       const injectable = getInjectable({
         id: 'some-injectable-id',
-
-        lifecycle: lifecycleEnum.transient,
-
         instantiate: () => asyncDependencyMock(),
       });
 
@@ -455,7 +543,7 @@ describe('withInjectables', () => {
       );
     });
 
-    it('renders as placeholder using the props', () => {
+    it('renders', () => {
       expect(rendered.baseElement).toMatchSnapshot();
     });
 
@@ -466,64 +554,39 @@ describe('withInjectables', () => {
     });
   });
 
-  describe('given component, no placeholder and async dependencies, when rendered', () => {
-    let rendered;
-    let asyncDependencyMock;
+  it('given component, no placeholder and async dependencies; throws', () => {
+    const asyncDependencyMock = asyncFn();
 
-    beforeEach(async () => {
-      asyncDependencyMock = asyncFn();
-
-      const injectable = getInjectable({
-        id: 'some-injectable-id',
-
-        lifecycle: lifecycleEnum.transient,
-
-        instantiate: () => asyncDependencyMock(),
-      });
-
-      di.register(injectable);
-
-      const DumbTestComponent = ({ someDependency, ...props }) => (
-        <div {...props}>Some content: "{someDependency}"</div>
-      );
-
-      const SmartTestComponent = withInjectables(DumbTestComponent, {
-        getProps: async (di, props) => ({
-          someDependency: await di.inject(injectable),
-          ...props,
-        }),
-      });
-
-      rendered = mount(<SmartTestComponent data-some-prop-test />);
+    const injectable = getInjectable({
+      id: 'some-injectable-id',
+      instantiate: () => asyncDependencyMock(),
     });
 
-    it('renders as null', () => {
-      expect(rendered.container).toBeEmptyDOMElement();
+    di.register(injectable);
+
+    const DumbTestComponent = ({ someDependency, ...props }) => (
+      <div {...props}>Some content: "{someDependency}"</div>
+    );
+
+    const SmartTestComponent = withInjectables(DumbTestComponent, {
+      getProps: async (di, props) => ({
+        someDependency: await di.inject(injectable),
+        ...props,
+      }),
     });
 
-    describe('when the dependency resolves', () => {
-      beforeEach(async () => {
-        await act(() => asyncDependencyMock.resolve('some-async-value'));
-      });
+    const existingConsoleError = console.error;
+    console.error = jest.fn();
 
-      it('renders', () => {
-        expect(rendered.baseElement).toMatchSnapshot();
-      });
-
-      it('has component with async content', () => {
-        expect(rendered.baseElement).toHaveTextContent(
-          'Some content: "some-async-value"',
-        );
-      });
-    });
+    expect(() => mount(<SmartTestComponent data-some-prop-test />)).toThrow(
+      'Returning props and dependencies asynchronously without a placeholder is not supported',
+    );
+    console.error = existingConsoleError;
   });
 
   it('given class component with sync dependencies, when rendered with ref, forwards ref', () => {
     const injectable = getInjectable({
       id: 'some-injectable-id',
-
-      lifecycle: lifecycleEnum.transient,
-
       instantiate: () => 'some-injectable-value',
     });
 
@@ -558,9 +621,6 @@ describe('withInjectables', () => {
 
     const injectable = getInjectable({
       id: 'some-injectable-id',
-
-      lifecycle: lifecycleEnum.transient,
-
       instantiate: () => asyncDependencyMock(),
     });
 
@@ -577,6 +637,7 @@ describe('withInjectables', () => {
     }
 
     const SmartTestComponent = withInjectables(DumbTestComponent, {
+      getPlaceholder: () => null,
       getProps: async (di, props) => ({
         someDependency: await di.inject(injectable),
         ...props,
@@ -595,9 +656,7 @@ describe('withInjectables', () => {
   it('given component, props and a dependency using instantiation parameter, when rendered, renders with the dependency having props as instantiation parameter', () => {
     const injectable = getInjectable({
       id: 'some-injectable-id',
-
       lifecycle: lifecycleEnum.transient,
-
       instantiate: (_, instantiationParameter) =>
         `some-injectable-value: ${instantiationParameter}`,
     });
