@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.6.0](https://github.com/lensapp/ogre-tools/compare/v18.5.3...v18.6.0) (2024-11-12)
+
+### Features
+
+- Make injection tokens more easy to spot in error string ([2da9b26](https://github.com/lensapp/ogre-tools/commit/2da9b26e0da8b3f5c87306649dcf1b60072ebc0a))
+
 ### [18.5.3](https://github.com/lensapp/ogre-tools/compare/v18.5.2...v18.5.3) (2024-10-01)
 
 ### Bug Fixes

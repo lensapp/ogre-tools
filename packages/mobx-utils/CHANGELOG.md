@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.6.0](https://github.com/lensapp/ogre-tools/compare/v18.5.3...v18.6.0) (2024-11-12)
+
+### Features
+
+- Introduce support for custom comparers in asyncComputed ([5f2ac85](https://github.com/lensapp/ogre-tools/commit/5f2ac850fb1853746bd8e3226f30e14f19bdfb93))
+
 ### [18.5.3](https://github.com/lensapp/ogre-tools/compare/v18.5.2...v18.5.3) (2024-10-01)
 
 **Note:** Version bump only for package @lensapp/mobx-utils

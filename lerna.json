@@ -1,5 +1,5 @@
 {
-  "version": "18.5.3",
+  "version": "18.6.0",
   "command": {
     "publish": {
       "forcePublish": true,

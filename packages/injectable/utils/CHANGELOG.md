@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.6.0](https://github.com/lensapp/ogre-tools/compare/v18.5.3...v18.6.0) (2024-11-12)
+
+**Note:** Version bump only for package @lensapp/injectable-utils
+
 ### [18.5.3](https://github.com/lensapp/ogre-tools/compare/v18.5.2...v18.5.3) (2024-10-01)
 
 **Note:** Version bump only for package @lensapp/injectable-utils
