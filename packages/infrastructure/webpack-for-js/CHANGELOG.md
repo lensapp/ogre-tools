@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [18.6.1](https://github.com/lensapp/ogre-tools/compare/v18.6.0...v18.6.1) (2024-11-14)
+
+**Note:** Version bump only for package @lensapp/infrastructure-webpack-for-js
+
 ## [18.6.0](https://github.com/lensapp/ogre-tools/compare/v18.5.3...v18.6.0) (2024-11-12)
 
 **Note:** Version bump only for package @lensapp/infrastructure-webpack-for-js

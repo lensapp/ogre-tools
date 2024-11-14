@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [18.6.1](https://github.com/lensapp/ogre-tools/compare/v18.6.0...v18.6.1) (2024-11-14)
+
+### Bug Fixes
+
+- Add missing typing for equality comparers of asyncComputed ([9d082c7](https://github.com/lensapp/ogre-tools/commit/9d082c794d3f60273e62130e49c8b244027dec0a))
+
 ## [18.6.0](https://github.com/lensapp/ogre-tools/compare/v18.5.3...v18.6.0) (2024-11-12)
 
 ### Features
