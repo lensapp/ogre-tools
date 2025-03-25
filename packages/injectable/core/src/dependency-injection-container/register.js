@@ -72,10 +72,10 @@ export const registerSingleFor =
 
     tokens.forEach(token => {
       const injectablesSet =
-        injectablesByInjectionToken.get(token) || new Set();
+        injectablesByInjectionToken.get(token.id) || new Set();
 
       injectablesSet.add(injectable);
 
-      injectablesByInjectionToken.set(token, injectablesSet);
+      injectablesByInjectionToken.set(token.id, injectablesSet);
     });
   };

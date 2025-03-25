@@ -28,7 +28,7 @@ const invalidabilityForReactiveInstances = getInjectable({
     createAtom(`reactivity-for-${injectionToken.id}`),
 
   lifecycle: lifecycleEnum.keyedSingleton({
-    getInstanceKey: (_, injectionToken) => injectionToken,
+    getInstanceKey: (_, injectionToken) => injectionToken.id,
   }),
 
   [isInternalOfComputedInjectMany]: true,
@@ -86,7 +86,10 @@ const reactiveInstancesFor = ({ id, methodInDiToInjectMany }) =>
 
     lifecycle: lifecycleEnum.keyedSingleton({
       getInstanceKey: (di, { injectionToken, instantiationParameter }) =>
-        getKeyedSingletonCompositeKey(injectionToken, instantiationParameter),
+        getKeyedSingletonCompositeKey(
+          injectionToken.id,
+          instantiationParameter,
+        ),
     }),
   });
 

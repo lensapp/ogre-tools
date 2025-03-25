@@ -101,7 +101,7 @@ export const deregisterSingleFor =
     const tokens = getRelatedTokens(injectable.injectionToken);
 
     tokens.forEach(token => {
-      injectablesByInjectionToken.get(token).delete(injectable);
+      injectablesByInjectionToken.get(token.id).delete(injectable);
     });
 
     overridingInjectables.delete(injectable);

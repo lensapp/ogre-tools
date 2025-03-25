@@ -6,6 +6,6 @@ export const getRelatedInjectablesFor =
     if (isInjectable(alias)) {
       return injectableSet.has(alias) ? [alias] : [];
     } else {
-      return [...(injectablesByInjectionToken.get(alias)?.values() || [])];
+      return [...(injectablesByInjectionToken.get(alias.id)?.values() || [])];
     }
   };
