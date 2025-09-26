@@ -279,7 +279,7 @@ describe('getInjectableComponent', () => {
 
     di.register(SomeInjectableComponent);
 
-    di.override(SomeInjectableComponent, () => () => (
+    di.override(SomeInjectableComponent.componentInjectable, () => () => (
       <div>some-overridden-content</div>
     ));
 
@@ -319,7 +319,7 @@ describe('getInjectableComponent', () => {
       // someNonRegisteredInjectable
     );
 
-    di.override(SomeInjectableComponent, () => () => {
+    di.override(SomeInjectableComponent.componentInjectable, () => () => {
       useInjectDeferred(someNonRegisteredInjectable);
     });
 
@@ -643,6 +643,55 @@ describe('getInjectableComponent', () => {
       <div>
         <DiContextProvider value={di}>
           <SomeComponent name="some-name" />
+        </DiContextProvider>
+      </div>,
+    );
+
+    const discover = discoverFor(() => rendered);
+
+    expect(
+      discover.getSingleElement('some-placeholder-with-name', 'some-name')
+        .discovered,
+    ).toBeInTheDocument();
+  });
+
+  it('given an injectable component with a placeholder and is the implementation of some injection token > when the injecting the component using the token > when the component suspends > shows the placeholder', () => {
+    const di = createContainer('some-container-1');
+    const someFn = asyncFn();
+    const someComponentInjectionToken = getInjectionToken('some-component');
+
+    const someAsyncValueInjectable = getInjectable({
+      id: 'some-async-value',
+      instantiate: (di, name) => someFn(name),
+      lifecycle: lifecycleEnum.keyedSingleton({
+        getInstanceKey: (di, name) => name,
+      }),
+    });
+
+    const SomeComponent = getInjectableComponent({
+      id: 'some-injectable-component',
+      Component: props => {
+        const someValue = useInjectDeferred(
+          someAsyncValueInjectable,
+          props.name,
+        );
+
+        return <div data-some-value-test={someValue} />;
+      },
+      PlaceholderComponent: ({ name }) => (
+        <div data-some-placeholder-with-name-test={name} />
+      ),
+      injectionToken: someComponentInjectionToken,
+    });
+
+    di.register(someAsyncValueInjectable, SomeComponent);
+
+    const SomeInjectedComponent = di.inject(someComponentInjectionToken);
+
+    const rendered = render(
+      <div>
+        <DiContextProvider value={di}>
+          <SomeInjectedComponent name="some-name" />
         </DiContextProvider>
       </div>,
     );

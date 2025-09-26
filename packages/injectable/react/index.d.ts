@@ -3,6 +3,7 @@ import {
   DiContainer,
   DiContainerForInjection,
   Injectable,
+  InjectableBunch,
   InjectionToken,
 } from '@lensapp/injectable';
 
@@ -28,9 +29,10 @@ export function useInjectDeferred<TReturnValue, TInstantiationParameter>(
   instantiationParameter: TInstantiationParameter,
 ): Awaited<TReturnValue>;
 
+export type InjectableComponentBunch<Component> = InjectableBunch<{ hocComponentInjectable: Injectable<Component>, componentInjectable: Injectable<Component> }>
 
 export type InjectableComponent<Component extends React.ComponentType<any>> =
-  Component & Injectable<Component>;
+  Component & InjectableComponentBunch<Component>;
 
 type ExcludedKeys = 'instantiate' | 'lifecycle' | 'scope' | 'decorable';
 

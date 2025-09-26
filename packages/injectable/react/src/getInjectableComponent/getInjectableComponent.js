@@ -1,6 +1,10 @@
 import React, { forwardRef, Suspense, useContext, useMemo } from 'react';
 
-import { getInjectable, lifecycleEnum } from '@lensapp/injectable';
+import {
+  getInjectable,
+  getInjectableBunch,
+  lifecycleEnum,
+} from '@lensapp/injectable';
 import { useInjectDeferred } from '../useInject/useInject';
 import {
   diContext,
@@ -15,18 +19,22 @@ export const getInjectableComponent = ({
   tags,
   injectionToken,
 }) => {
-  const normalInjectable = getInjectable({
+  const componentInjectable = getInjectable({
     id,
-    injectionToken,
     causesSideEffects,
     tags,
     instantiate: () => Component,
+  });
+  const hocComponentInjectable = getInjectable({
+    id: `InjectableComponent(${id})`,
+    instantiate: () => InjectableComponent,
+    injectionToken,
   });
 
   const InjectableComponent = Object.assign(
     forwardRef((props, ref) => {
       const failSafeDi = useContext(diContext);
-      const InjectedComponent = useInjectDeferred(InjectableComponent);
+      const InjectedComponent = useInjectDeferred(componentInjectable);
 
       return (
         <DiContextProvider value={failSafeDi}>
@@ -41,10 +49,16 @@ export const getInjectableComponent = ({
       );
     }),
 
-    normalInjectable,
+    componentInjectable,
 
     { displayName: `InjectableComponent(${id})` },
   );
 
-  return InjectableComponent;
+  return Object.assign(
+    InjectableComponent,
+    getInjectableBunch({
+      hocComponentInjectable,
+      componentInjectable,
+    }),
+  );
 };

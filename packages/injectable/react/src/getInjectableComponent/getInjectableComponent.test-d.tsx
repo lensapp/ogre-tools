@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { expectAssignable, expectError, expectType } from 'tsd';
-import { getInjectableComponent } from '../../index';
+import { getInjectableComponent, InjectableComponentBunch } from '../../index';
 import {
   createContainer,
   getInjectionToken,
@@ -48,7 +48,7 @@ const InjectableComponentNotUsingProps = getInjectableComponent({
 });
 expectAssignable<React.ComponentType>(InjectableComponentNotUsingProps);
 
-expectAssignable<Injectable<React.ComponentType>>(
+expectAssignable<InjectableComponentBunch<React.ComponentType>>(
   InjectableComponentNotUsingProps,
 );
 
@@ -65,7 +65,7 @@ const InjectableComponentUsingInjectionToken = getInjectableComponent({
 
 expectAssignable<React.ComponentType>(InjectableComponentUsingInjectionToken);
 
-expectAssignable<Injectable<React.ComponentType>>(
+expectAssignable<InjectableComponentBunch<React.ComponentType>>(
   InjectableComponentUsingInjectionToken,
 );
 
@@ -85,7 +85,7 @@ const InjectableComponentUsingNullPlaceholder = getInjectableComponent({
 
 expectAssignable<React.ComponentType>(InjectableComponentUsingPlaceholder);
 
-expectAssignable<Injectable<React.ComponentType>>(
+expectAssignable<InjectableComponentBunch<React.ComponentType>>(
   InjectableComponentUsingPlaceholder,
 );
 
@@ -119,7 +119,7 @@ const InjectableComponentCausingSideEffect = getInjectableComponent({
 
 expectAssignable<React.ComponentType>(InjectableComponentCausingSideEffect);
 
-expectAssignable<Injectable<React.ComponentType>>(
+expectAssignable<InjectableComponentBunch<React.ComponentType>>(
   InjectableComponentCausingSideEffect,
 );
 
@@ -134,13 +134,13 @@ expectAssignable<React.ComponentType<{ someProp: string }>>(
   SomeInjectableComponentUsingInjectionToken,
 );
 
-expectAssignable<Injectable<React.ComponentType<{ someProp: string }>>>(
-  SomeInjectableComponentUsingInjectionToken,
-);
+expectAssignable<
+  InjectableComponentBunch<React.ComponentType<{ someProp: string }>>
+>(SomeInjectableComponentUsingInjectionToken);
 
 const di = createContainer('irrelevant');
 expectType<React.ComponentType<{ someProp: string }>>(
-  di.inject(SomeInjectableComponentUsingInjectionToken),
+  di.inject(someInjectionTokenUsingProps),
 );
 
 // given injection token, and component using less props than token, typing is not ok
@@ -155,7 +155,7 @@ expectError<React.ComponentType>(
   SomeInjectableComponentUsingLessPropsThanInjectionToken,
 );
 
-expectError<Injectable<React.ComponentType>>(
+expectError<InjectableComponentBunch<React.ComponentType>>(
   SomeInjectableComponentUsingLessPropsThanInjectionToken,
 );
 
@@ -197,9 +197,9 @@ expectAssignable<React.ComponentType<{ someProp: string }>>(
   SomeInjectableComponentUsingProps,
 );
 
-expectAssignable<Injectable<React.ComponentType<{ someProp: string }>>>(
-  SomeInjectableComponentUsingProps,
-);
+expectAssignable<
+  InjectableComponentBunch<React.ComponentType<{ someProp: string }>>
+>(SomeInjectableComponentUsingProps);
 
 // given class component not using props, typing is ok
 const SomeClassInjectableComponentNotUsingProps = getInjectableComponent({
@@ -211,7 +211,7 @@ expectAssignable<React.ComponentType>(
   SomeClassInjectableComponentNotUsingProps,
 );
 
-expectAssignable<Injectable<React.ComponentType>>(
+expectAssignable<InjectableComponentBunch<React.ComponentType>>(
   SomeClassInjectableComponentNotUsingProps,
 );
 
@@ -225,9 +225,9 @@ expectAssignable<React.ComponentType<{ someProp: string }>>(
   SomeClassInjectableComponentUsingProps,
 );
 
-expectAssignable<Injectable<React.ComponentType<{ someProp: string }>>>(
-  SomeClassInjectableComponentUsingProps,
-);
+expectAssignable<
+  InjectableComponentBunch<React.ComponentType<{ someProp: string }>>
+>(SomeClassInjectableComponentUsingProps);
 
 // given custom instantiate, typing is not ok
 expectError(
@@ -296,9 +296,9 @@ expectAssignable<React.ComponentType<{ someProp: 'some-type' }>>(
   SomeInjectableComponentForTypedSpecifier,
 );
 
-expectAssignable<Injectable<React.ComponentType<{ someProp: 'some-type' }>>>(
-  SomeInjectableComponentForTypedSpecifier,
-);
+expectAssignable<
+  InjectableComponentBunch<React.ComponentType<{ someProp: 'some-type' }>>
+>(SomeInjectableComponentForTypedSpecifier);
 
 expectType<React.ComponentType<{ someProp: 'some-type' }>>(
   di.inject(someInjectionTokenWithTypedSpecifier.for(someTypedSpecifier)),
