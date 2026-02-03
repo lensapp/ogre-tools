@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [21.0.1](https://github.com/lensapp/ogre-tools/compare/v21.0.0...v21.0.1) (2026-02-03)
+
+### Performance Improvements
+
+- **element-component:** Optimize plugin pipeline for ~60% faster renders ([dd06b8f](https://github.com/lensapp/ogre-tools/commit/dd06b8fccfbf04f6f5d514bb3fb9b821d0d7e238))
+
 ## [21.0.0](https://github.com/lensapp/ogre-tools/compare/v20.8.0...v21.0.0) (2025-11-14)
 
 ### ⚠ BREAKING CHANGES
