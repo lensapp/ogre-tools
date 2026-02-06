@@ -6,6 +6,7 @@ module.exports = {
   entry: './index.js',
   target: 'node',
   mode: 'production',
+  devtool: 'source-map',
 
   performance: {
     maxEntrypointSize: 20000,
