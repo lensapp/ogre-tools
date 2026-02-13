@@ -33,12 +33,7 @@ export interface DiContainer extends DiContainerForInjection {
   ): void;
 }
 
-export type Instantiate<InjectionInstance, InstantiationParam> = {
-  (
-    di: DiContainerForInjection,
-    param: InstantiationParam extends void ? void : InstantiationParam,
-  ): InjectionInstance;
-};
+export type Instantiate<InjectionInstance, InstantiationParam> = (di: DiContainerForInjection, param: InstantiationParam) => InjectionInstance;
 
 export interface InjectionToken<
   InjectionInstance,
@@ -90,11 +85,14 @@ export interface Injectable<
   readonly scope?: boolean;
 }
 
-export type GetInjectableOptionsWithoutInstantiationParameter<I extends TI, TI> = Omit<Injectable<I, TI, void>, "lifecycle"> & {
-  lifecycle?: Lifecycle<void>;
+export type GetInjectableOptionsWithoutInstantiationParameter<I extends TI, TI> = Omit<Injectable<I, TI, void>, "lifecycle" | "instantiate"> & {
+  readonly instantiate: (di: DiContainerForInjection, param: void) => I;
+  readonly lifecycle?: Lifecycle<void>;
 }
 
-export type GetInjectableOptionsWithInstantiationParameter<I extends TI, TI, P> = Injectable<I, TI, P>;
+export type GetInjectableOptionsWithInstantiationParameter<I extends TI, TI, P> = Omit<Injectable<I, TI, P>, "instantiate"> & {
+  readonly instantiate: (di: DiContainerForInjection, param: P) => I;
+};
 
 export interface GetInjectable{
   <I extends TI, TI>(options: GetInjectableOptionsWithoutInstantiationParameter<I, TI>): Injectable<I, TI, void>;

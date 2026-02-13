@@ -168,6 +168,23 @@ const decoratorForInjectionParameterInjectable = getInjectable({
   injectionToken: injectionDecoratorToken,
 });
 
+type SomeKey<T, P> = TypedSpecifier<string, { value: T, param: P }>;
+
+const somethingInjectionToken = getInjectionToken<unknown, unknown, <T, P>(id: SomeKey<T, P>) => SpecificInjectionToken<(item: T) => number, P>>({
+  id: "something",
+})
+
+const injectableFor = <T, P>(id: SomeKey<T, P>, lifecycle: Lifecycle<P>) => getInjectable({
+  id: `something-for(${id})`,
+  instantiate: (di, param) => {
+    expectType<P>(param);
+
+    return (item) => 10;
+  },
+  injectionToken: somethingInjectionToken.for(id),
+  lifecycle,
+});
+
 const decoratorForSpecificInjectionParameterInjectable = getInjectable({
   id: 'decorator-for-parameter-injectable',
 
@@ -208,7 +225,7 @@ const someInjectableForTypingOfInstantiate = getInjectable({
 const someInjectableWithMatchingInstantiationParameters = getInjectable({
   id: 'some-injectable',
 
-  instantiate: (di, instantiationParameter: string) => {
+  instantiate: (di, instantiationParameter) => {
     expectType<string>(instantiationParameter);
   },
 
