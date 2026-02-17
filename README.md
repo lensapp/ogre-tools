@@ -6,9 +6,8 @@ An assortment of tools for brutal software development.
 
 ```
 $ npm install
-$ npm run install-all-packages
 
-$ npm test -- --watch
+$ npm test
 
 $ npm run build-all-packages
 ```
