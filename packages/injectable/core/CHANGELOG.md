@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [21.0.2](https://github.com/lensapp/ogre-tools/compare/v21.0.1...v21.0.2) (2026-02-18)
+
+### Bug Fixes
+
+- GetInjectable should type param simply when a lifecycle is explicitly provided ([b23943d](https://github.com/lensapp/ogre-tools/commit/b23943d94ecec99e557e607f1e8a900b5defbfb7))
+
 ### [21.0.1](https://github.com/lensapp/ogre-tools/compare/v21.0.0...v21.0.1) (2026-02-03)
 
 **Note:** Version bump only for package @lensapp/injectable
