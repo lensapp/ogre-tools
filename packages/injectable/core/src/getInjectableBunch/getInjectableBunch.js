@@ -1,10 +1,6 @@
-import getInjectable from '../getInjectable/getInjectable';
-
 export const injectableBunchSymbol = 'injectable-bunch';
 
-export default function (bunch) {
-  return {
+export default bunch =>
+  Object.assign(bunch, {
     aliasType: injectableBunchSymbol,
-    ...bunch,
-  };
-}
+  });
