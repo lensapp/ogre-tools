@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [21.0.3](https://github.com/lensapp/ogre-tools/compare/v21.0.2...v21.0.3) (2026-02-20)
+
+### Bug Fixes
+
+- **injectable-extension-for-mobx:** ComputedInjectMaybe should pass through injection params ([8c89d4c](https://github.com/lensapp/ogre-tools/commit/8c89d4c02f97f4b3640ece7f4980d5e4b8dc4ccf))
+- **injectable:** GetInjectableBunch should not mangle array prototypes ([31c77e7](https://github.com/lensapp/ogre-tools/commit/31c77e7dd07567d2e171514b19a7c40b1b154870))
+
 ### [21.0.2](https://github.com/lensapp/ogre-tools/compare/v21.0.1...v21.0.2) (2026-02-18)
 
 ### Bug Fixes
