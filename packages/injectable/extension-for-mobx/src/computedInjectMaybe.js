@@ -15,7 +15,9 @@ export const _computedInjectMaybeInjectable = getInjectable({
   id: 'computed-inject-maybe-internal',
 
   instantiate: (di, { token, param }) => {
-    const computedInjectManyWithMeta = di.inject(computedInjectManyWithMetaInjectionToken);
+    const computedInjectManyWithMeta = di.inject(
+      computedInjectManyWithMetaInjectionToken,
+    );
     const computedMany = computedInjectManyWithMeta(token, param);
 
     return computed(() => {
