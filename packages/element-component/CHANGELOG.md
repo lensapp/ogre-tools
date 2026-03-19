@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.1.0](https://github.com/lensapp/ogre-tools/compare/v21.0.3...v21.1.0) (2026-03-19)
+
+### Features
+
+- **element-component:** Introduce mechanism for conditional $prop usage with react hooks ([dbfbac7](https://github.com/lensapp/ogre-tools/commit/dbfbac72ad151b4423cae9a72c19b91f8ca3f02f))
+
 ### [21.0.3](https://github.com/lensapp/ogre-tools/compare/v21.0.2...v21.0.3) (2026-02-20)
 
 **Note:** Version bump only for package @lensapp/element-component
