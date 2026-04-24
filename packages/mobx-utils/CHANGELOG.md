@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.1.0](https://github.com/lensapp/ogre-tools/compare/v22.0.0...v22.1.0) (2026-04-24)
+
+### Features
+
+- Add dual CJS/ESM build output for all packages ([639e19e](https://github.com/lensapp/ogre-tools/commit/639e19e1db7c65b2c53a6234669f23219228299f))
+
 ## [22.0.0](https://github.com/lensapp/ogre-tools/compare/v21.1.0...v22.0.0) (2026-04-24)
 
 **Note:** Version bump only for package @lensapp/mobx-utils

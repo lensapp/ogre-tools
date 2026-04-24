@@ -1,7 +1,7 @@
 {
   "name": "@lensapp/element-component",
   "private": false,
-  "version": "22.0.0",
+  "version": "22.1.0",
   "description": "Re-usable props in React",
   "type": "commonjs",
   "publishConfig": {
@@ -16,8 +16,14 @@
   "module": "build/index.mjs",
   "exports": {
     ".": {
-      "import": { "types": "./build/index.d.ts", "default": "./build/index.mjs" },
-      "require": { "types": "./build/index.d.ts", "default": "./build/index.js" }
+      "import": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.mjs"
+      },
+      "require": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      }
     }
   },
   "types": "build/index.d.ts",
@@ -34,12 +40,12 @@
   },
   "devDependencies": {
     "@async-fn/jest": "^1.6.4",
-    "@lensapp/discoverable": "^22.0.0",
-    "@lensapp/infrastructure-babel-for-ts": "^22.0.0",
-    "@lensapp/infrastructure-jest": "^22.0.0",
-    "@lensapp/infrastructure-prettier": "^22.0.0",
-    "@lensapp/infrastructure-webpack-for-ts": "^22.0.0",
-    "@lensapp/ogre-test-utils": "^22.0.0",
+    "@lensapp/discoverable": "^22.1.0",
+    "@lensapp/infrastructure-babel-for-ts": "^22.1.0",
+    "@lensapp/infrastructure-jest": "^22.1.0",
+    "@lensapp/infrastructure-prettier": "^22.1.0",
+    "@lensapp/infrastructure-webpack-for-ts": "^22.1.0",
+    "@lensapp/ogre-test-utils": "^22.1.0",
     "type-fest": "^4.27.0"
   },
   "scripts": {
