@@ -25,10 +25,12 @@
   ],
   "author": "Ogre Works",
   "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
   "peerDependencies": {
     "@lensapp/fp": "^16 || ^17 || ^18 || ^19 || ^20 || ^21 || ^22",
-    "@lensapp/injectable": "^16 || ^17 || ^18 || ^19 || ^20 || ^21 || ^22",
-    "lodash": "^4.17.21"
+    "@lensapp/injectable": "^16 || ^17 || ^18 || ^19 || ^20 || ^21 || ^22"
   },
   "bugs": {
     "url": "https://github.com/lensapp/ogre-tools/issues"
