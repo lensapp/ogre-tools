@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.0.0](https://github.com/lensapp/ogre-tools/compare/v21.1.0...v22.0.0) (2026-04-24)
+
+### ⚠ BREAKING CHANGES
+
+- **injectable-extension-for-mobx:** Unwrap computedInjectMany2 family and reuse ManyFactory
+- **injectable-extension-for-mobx:** The following named exports are removed from
+  @lensapp/injectable-extension-for-mobx: computedInjectManyInjectable,
+  computedInjectManyWithMetaInjectable, computedInjectMany2Injectable,
+  computedInjectManyWithMeta2Injectable, computedInjectMaybeInjectable,
+  computedInjectMaybe2Injectable. Use the matching \*InjectionToken exports
+  together with registerMobX instead.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+
+### Features
+
+- **injectable-extension-for-mobx:** Add 2-variants of computedInjectMany et al ([3b251bb](https://github.com/lensapp/ogre-tools/commit/3b251bbc3e1a6e83409bda20ddebf77803a87fef))
+- **injectable:** Add getAbstractInjectionToken2 with full enforcement ([f3bd957](https://github.com/lensapp/ogre-tools/commit/f3bd957cdb1fe7e9a42295724c541381d631e873))
+- **injectable:** Add getInjectable2/getInjectionToken2 with curried instantiate and generic support ([f38e667](https://github.com/lensapp/ogre-tools/commit/f38e667e0e719513a7d8dd7dcd41bf9b95fadf86))
+- **injectable:** Add registration/deregistration decorator tokens ([62f9cf8](https://github.com/lensapp/ogre-tools/commit/62f9cf8fff258c9daac5647088206b06cdf6ef2b))
+- **injectable:** Add registration/deregistration decorator tokens as abstract v2 ([5fdb64e](https://github.com/lensapp/ogre-tools/commit/5fdb64e02e5591e87ba5f8fb5d441f0f069fbc7b))
+
+### Bug Fixes
+
+- **injectable-extension-for-mobx:** Wrap computed reads in runInAction to suppress MobX warnings ([f56106d](https://github.com/lensapp/ogre-tools/commit/f56106d21928969159d8faf247cd5c02d18bc9cf))
+- **injectable-mobx:** Use curried inject for v2 minimalDi in computed-inject-2 variants ([05a9d29](https://github.com/lensapp/ogre-tools/commit/05a9d29fed99d8e7c23d47f242d9fba8ba3c6c31))
+
+### Performance Improvements
+
+- **injectable-mobx:** Track reactivity atoms lazily, share wrapper singletons, drop rest-spread ([49618b8](https://github.com/lensapp/ogre-tools/commit/49618b8569562f64b09043e1692ade04ec2794b3))
+
+### Code Refactoring
+
+- **injectable-extension-for-mobx:** Stop exporting injectables from package surface ([a675191](https://github.com/lensapp/ogre-tools/commit/a675191e4c939308e187164ef04380c16338c356))
+- **injectable-extension-for-mobx:** Unwrap computedInjectMany2 family and reuse ManyFactory ([3df7e8a](https://github.com/lensapp/ogre-tools/commit/3df7e8a57a66378b9b62a0144c75cba672e1c7ca))
+
 ## [21.1.0](https://github.com/lensapp/ogre-tools/compare/v21.0.3...v21.1.0) (2026-03-19)
 
 ### Features

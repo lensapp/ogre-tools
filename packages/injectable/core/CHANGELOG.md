@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.0.0](https://github.com/lensapp/ogre-tools/compare/v21.1.0...v22.0.0) (2026-04-24)
+
+### ⚠ BREAKING CHANGES
+
+- **injectable:** Restructure Inject/Inject2 types and clean minimalDi interfaces
+- **injectable:** di.decorate(alias, decorator) and
+  di.decorateFunction(alias, decorator) are gone. Replace call sites by
+  registering an injectable with injectionToken: injectionDecoratorToken.for(alias)
+  on a container created with { injectionDecorators: true }.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+
+- **injectable:** Containers that rely on di.decorate, di.decorateFunction,
+  or injectables registered against injectionDecoratorToken.for(...) must
+  now pass { injectionDecorators: true } to createContainer.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+
+### Features
+
+- **injectable-react:** Add getInjectionTokenComponent ([0423f4a](https://github.com/lensapp/ogre-tools/commit/0423f4aa1ce701f920c5ff39d9727a5762aaa175))
+- **injectable:** Add getAbstractInjectionToken2 with full enforcement ([f3bd957](https://github.com/lensapp/ogre-tools/commit/f3bd957cdb1fe7e9a42295724c541381d631e873))
+- **injectable:** Add getInjectable2/getInjectionToken2 with curried instantiate and generic support ([f38e667](https://github.com/lensapp/ogre-tools/commit/f38e667e0e719513a7d8dd7dcd41bf9b95fadf86))
+- **injectable:** Add getNumberOfInstances for global instance count introspection ([22126e6](https://github.com/lensapp/ogre-tools/commit/22126e64a0cef701142e5364aca362cd2de47c1e))
+- **injectable:** Add inject2/injectMany2 for factory-returning injection ([7141062](https://github.com/lensapp/ogre-tools/commit/7141062c11f2a8a03b1756d5a43108ffe3cee14a))
+- **injectable:** Add injectable2/token2 support to Override type ([0857ba9](https://github.com/lensapp/ogre-tools/commit/0857ba95b6a573a27f4649593a7c0dda03a36807))
+- **injectable:** Add instancePurgeCallbackToken with three-phase purge and LRU integration ([9638776](https://github.com/lensapp/ogre-tools/commit/9638776af4590ba850c3e409c27c6012ec5b1822))
+- **injectable:** Add LRU cache support for keyedSingleton instances ([d3e16a5](https://github.com/lensapp/ogre-tools/commit/d3e16a5d5f6ea054ac502b77cebc92f3f35a89ec))
+- **injectable:** Add registration/deregistration decorator tokens ([62f9cf8](https://github.com/lensapp/ogre-tools/commit/62f9cf8fff258c9daac5647088206b06cdf6ef2b))
+- **injectable:** Add registration/deregistration decorator tokens as abstract v2 ([5fdb64e](https://github.com/lensapp/ogre-tools/commit/5fdb64e02e5591e87ba5f8fb5d441f0f069fbc7b))
+- **injectable:** Enhance purge with key-based, token, scoped, and typed support ([ef75e19](https://github.com/lensapp/ogre-tools/commit/ef75e19ef71a34d0dc5330cf9bc1cbe8c3de06a7))
+- **injectable:** Make di.override and di.override2 cross-compatible with v1/v2 ([7d8a697](https://github.com/lensapp/ogre-tools/commit/7d8a697bfed754b8fc61aacc3631f1e8f4733f26))
+- **injectable:** Make injectionDecorators opt-in at container creation ([ed0f5d2](https://github.com/lensapp/ogre-tools/commit/ed0f5d2e34459349000db3ce73b60e9ae08dd981))
+
+### Bug Fixes
+
+- **injectable:** Detect override-after-injection when overriding by token ([4c5190e](https://github.com/lensapp/ogre-tools/commit/4c5190e5cd96bc201ef1a08f6c4fc193b0f15f78))
+- **injectable:** Fix cascade deregistration throwing for already-deregistered injectables ([329ad85](https://github.com/lensapp/ogre-tools/commit/329ad85ea00058ffeb595f52d533703f620638f7))
+- **injectable:** Fix cascade deregistration throwing for already-deregistered injectables ([dd56f22](https://github.com/lensapp/ogre-tools/commit/dd56f22c876c9d92d92b672e5b776e6d9c12606c))
+- **injectable:** Fix context mutation and optimize hot paths ([ecb9d4c](https://github.com/lensapp/ogre-tools/commit/ecb9d4c882c773c33f18fc87fbc3a80d5114ecdf))
+- **injectable:** Fix WithMeta types and add type tests for token2 ([fedddc3](https://github.com/lensapp/ogre-tools/commit/fedddc3db6ab326ad03fa698f63bb835f2a3625c))
+- **injectable:** Include injectable id in singleton instantiation-parameter error ([c538535](https://github.com/lensapp/ogre-tools/commit/c53853593252e6589db20cdd7b11c804cc5bd542))
+- **injectable:** Include injecting injectable's namespaced id in inject error messages ([e71086d](https://github.com/lensapp/ogre-tools/commit/e71086d6ac5349e0052bfee450c705fafe654726))
+- **injectable:** Look up instantiation decorators by original injectable, not override ([2ac1d81](https://github.com/lensapp/ogre-tools/commit/2ac1d814f4a6c2a9fb488fb6eee928d3837553c0))
+- **injectable:** Prevent double-decoration when injectable and token share id ([71aa101](https://github.com/lensapp/ogre-tools/commit/71aa101135ea13bcd63e99a8bee80b932ddb8f54))
+- **injectable:** Stop double-applying injection decorators via injectMany ([a6c37fa](https://github.com/lensapp/ogre-tools/commit/a6c37fafe32b4cec7abddbd0eb701f904310874f))
+- **injectable:** Stop spreading v1 instantiation param in Inject2 factory ([14a62f8](https://github.com/lensapp/ogre-tools/commit/14a62f87fb24ace10e1a986fb31291dbd82e09ea))
+- **injectable:** Tolerate undefined instantiation args on old-style singletons ([bb22999](https://github.com/lensapp/ogre-tools/commit/bb2299994c16e208a9bdce3e75e451957ab2f8af))
+- **injectable:** Use namespaced ids in error messages where injectable is registered ([3167484](https://github.com/lensapp/ogre-tools/commit/3167484aef1402cac521b203bfebfe04e4098b21))
+- **injectable:** Use object reference as speciality in abstract decorator tokens ([a992e1a](https://github.com/lensapp/ogre-tools/commit/a992e1a4fe896982766a96ce85b66a6dad4a6866))
+
+### Performance Improvements
+
+- **injectable:** Cache injection and instantiation decorator lists ([a4820c6](https://github.com/lensapp/ogre-tools/commit/a4820c67f1452779058c95e2c6706764267b266e))
+- **injectable:** Fast-path singleton cache hits, avoiding minimalDi allocation ([68521a5](https://github.com/lensapp/ogre-tools/commit/68521a5a150619d56c81e6df124ee17bf47251c9))
+- **injectable:** Optimize getInstance with lifecycle fast paths and decorator skip ([45841f3](https://github.com/lensapp/ogre-tools/commit/45841f3c3b45894e30e1a0f891f5755afc125cd8))
+- **injectable:** Optimize inject hot path and eliminate redundant computation ([8a333a3](https://github.com/lensapp/ogre-tools/commit/8a333a3ffd0d924bf723355b5302f072750fe704))
+- **injectable:** Optimize registration decoration to avoid per-injectable overhead ([956e49f](https://github.com/lensapp/ogre-tools/commit/956e49fe4efecc85335d8384fed1a8924290bfb0))
+- **injectable:** Optimize registration path allocations ([331693f](https://github.com/lensapp/ogre-tools/commit/331693f67db899202ba0be772349d52edc2b8f91))
+- **injectable:** Reduce per-inject overhead in injectMany and inject ([06c6593](https://github.com/lensapp/ogre-tools/commit/06c6593d00f424c83760f8da19714417c2b3ae53))
+- **injectable:** Remove unused dependency tracking maps ([d9de077](https://github.com/lensapp/ogre-tools/commit/d9de077cc97ce405fe753d55b04f9190381cd5b0))
+- **injectable:** Replace O(n\*m) deregistration context scan with reverse index ([6857aef](https://github.com/lensapp/ogre-tools/commit/6857aef94eb743d4a1dab57efa4e5b9e2a804459))
+
+### Code Refactoring
+
+- **injectable:** Remove di.decorate and di.decorateFunction shorthands ([4add9f6](https://github.com/lensapp/ogre-tools/commit/4add9f612cbaec7cc774449dfe194199c4f4c753))
+- **injectable:** Restructure Inject/Inject2 types and clean minimalDi interfaces ([fe45011](https://github.com/lensapp/ogre-tools/commit/fe4501174bc0133708efc4eb50b6f0177aa6482b))
+
 ## [21.1.0](https://github.com/lensapp/ogre-tools/compare/v21.0.3...v21.1.0) (2026-03-19)
 
 **Note:** Version bump only for package @lensapp/injectable

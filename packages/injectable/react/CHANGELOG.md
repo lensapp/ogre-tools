@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.0.0](https://github.com/lensapp/ogre-tools/compare/v21.1.0...v22.0.0) (2026-04-24)
+
+### ⚠ BREAKING CHANGES
+
+- **injectable-react:** Rename getAbstractInjectionTokenComponent to \*2
+
+### Features
+
+- **injectable-react:** Add getAbstractInjectionTokenComponent ([1fb8f41](https://github.com/lensapp/ogre-tools/commit/1fb8f4180c30c52dc9126cf2480bb4422a15b81f))
+- **injectable-react:** Add getInjectableComponent2 for v2 InjectionToken2 ([b48ad13](https://github.com/lensapp/ogre-tools/commit/b48ad13d479469e1a58e69daf04da475166ba398))
+- **injectable-react:** Add getInjectionTokenComponent ([0423f4a](https://github.com/lensapp/ogre-tools/commit/0423f4aa1ce701f920c5ff39d9727a5762aaa175))
+- **injectable-react:** Add getInjectionTokenComponent2 for v2 InjectionToken2 ([baf9c15](https://github.com/lensapp/ogre-tools/commit/baf9c15224bf949315ddc739cdb241803677f019))
+- **injectable-react:** Add useInject2 factory-returning hook ([9025880](https://github.com/lensapp/ogre-tools/commit/9025880bf5ca4f2dce4a7568e5ee8f542678ac5a))
+- **injectable-react:** Support injectable2 in useInject hooks ([86b4e11](https://github.com/lensapp/ogre-tools/commit/86b4e113b852d95dbbbdea9b23c5f846a8e168d6))
+- **injectable:** Add getInjectable2/getInjectionToken2 with curried instantiate and generic support ([f38e667](https://github.com/lensapp/ogre-tools/commit/f38e667e0e719513a7d8dd7dcd41bf9b95fadf86))
+- **injectable:** Make di.override and di.override2 cross-compatible with v1/v2 ([7d8a697](https://github.com/lensapp/ogre-tools/commit/7d8a697bfed754b8fc61aacc3631f1e8f4733f26))
+
+### Bug Fixes
+
+- **injectable-react:** Accept specific ComponentType tokens for bare components ([f9645ce](https://github.com/lensapp/ogre-tools/commit/f9645cee3310d3bc98e5d3c45a8face0e6b7daac))
+- **injectable-react:** Run tsd separately per test file to avoid multi-directory glob bug ([6e1014e](https://github.com/lensapp/ogre-tools/commit/6e1014ed51fc197782df6c0fd474e0dd08129f08))
+- **injectable-react:** Update error message expectations after context removal ([ab10112](https://github.com/lensapp/ogre-tools/commit/ab1011205af68ffbb0cebaa3dbd9a29ad756fe6c))
+- **injectable-react:** Widen injectionToken type in getInjectableComponent ([08109fe](https://github.com/lensapp/ogre-tools/commit/08109fe3f48d1fba6fb03ab0373de7ff4cd2047c))
+- **injectable:** Fix cascade deregistration throwing for already-deregistered injectables ([dd56f22](https://github.com/lensapp/ogre-tools/commit/dd56f22c876c9d92d92b672e5b776e6d9c12606c))
+- **injectable:** Tolerate undefined instantiation args on old-style singletons ([bb22999](https://github.com/lensapp/ogre-tools/commit/bb2299994c16e208a9bdce3e75e451957ab2f8af))
+
+### Code Refactoring
+
+- **injectable-react:** Rename getAbstractInjectionTokenComponent to \*2 ([738f2b8](https://github.com/lensapp/ogre-tools/commit/738f2b8e5982bf92dbf226d2c7b62633988735f3))
+
 ## [21.1.0](https://github.com/lensapp/ogre-tools/compare/v21.0.3...v21.1.0) (2026-03-19)
 
 **Note:** Version bump only for package @lensapp/injectable-react

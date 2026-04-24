@@ -1,7 +1,7 @@
 {
   "name": "@lensapp/infrastructure-babel-for-js",
   "private": true,
-  "version": "21.1.0",
+  "version": "22.0.0",
   "description": "Shared babel configuration",
   "repository": {
     "type": "git",
