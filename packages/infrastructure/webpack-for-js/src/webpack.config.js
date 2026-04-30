@@ -6,6 +6,7 @@ const cjsConfig = {
   entry: './index.js',
   target: 'node',
   mode: 'production',
+  devtool: 'source-map',
 
   resolve: {
     extensions: ['.js', '.jsx'],
