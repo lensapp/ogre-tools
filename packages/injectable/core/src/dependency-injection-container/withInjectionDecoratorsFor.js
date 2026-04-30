@@ -2,17 +2,9 @@ import flow from './fastFlow';
 import { injectionDecoratorToken } from './tokens';
 
 export const withInjectionDecoratorsFor =
-  ({ injectMany, decoratorCache }) =>
+  ({ decoratorCache, getApplicableDecorators }) =>
   toBeDecorated =>
   ({ alias, instantiationParameters, injectingInjectable }) => {
-    if (alias.decorable === false) {
-      return toBeDecorated({
-        alias,
-        instantiationParameters,
-        injectingInjectable,
-      });
-    }
-
     // When decoratorCache.injection is null, a decorator was registered or
     // deregistered — invalidate all per-alias cached compositions.
     if (decoratorCache.injection === null) {
@@ -23,20 +15,11 @@ export const withInjectionDecoratorsFor =
     let decorated = decoratorCache.injectionByAlias.get(alias);
 
     if (decorated === undefined) {
-      const decorators = [
-        ...injectMany({
-          alias: injectionDecoratorToken.for(alias),
-          instantiationParameters: [],
-          injectingInjectable,
-        }),
-        ...(alias.injectionToken
-          ? injectMany({
-              alias: injectionDecoratorToken.for(alias.injectionToken),
-              instantiationParameters: [],
-              injectingInjectable,
-            })
-          : []),
-      ];
+      const decorators = getApplicableDecorators({
+        decoratorToken: injectionDecoratorToken,
+        target: alias,
+        injectingInjectable,
+      });
 
       if (decorators.length > 0) {
         const boundInject = (...params) =>

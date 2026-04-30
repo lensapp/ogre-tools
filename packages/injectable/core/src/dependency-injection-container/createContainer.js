@@ -15,6 +15,8 @@ import { earlyOverrideFor, earlyOverride2For } from './early-override';
 import { injectionDecoratorToken } from './tokens';
 import { isRelatedToToken } from './getRelatedTokens';
 import { firePurgeCallbacksFor } from './firePurgeCallbacksFor';
+import { getApplicableDecoratorsFor } from './getApplicableDecoratorsFor';
+import { isCompositeStorage } from './privateInjectFor';
 
 export default (containerId, { injectionDecorators = false } = {}) => {
   const injectableSet = new Set();
@@ -54,7 +56,6 @@ export default (containerId, { injectionDecorators = false } = {}) => {
     nonDecoratedPrivateInjectManyFor({
       getRelatedInjectables,
       getInject: () => decoratedPrivateInject,
-      checkForAbstractToken,
       namespacedIdByInjectableMap,
     });
 
@@ -67,6 +68,11 @@ export default (containerId, { injectionDecorators = false } = {}) => {
     nonDecoratedPrivateInjectManyForUnknownMeta({
       withMeta: true,
     });
+
+  const getApplicableDecorators = getApplicableDecoratorsFor({
+    injectMany: nonDecoratedPrivateInjectMany,
+    injectablesByInjectionToken,
+  });
 
   const getSideEffectsArePrevented = injectable =>
     sideEffectsArePrevented &&
@@ -88,6 +94,7 @@ export default (containerId, { injectionDecorators = false } = {}) => {
 
   const nonDecoratedPrivateInjectUnknownMeta = privateInjectFor({
     getRelatedInjectables,
+    injectableSet,
     alreadyInjected,
     overridingInjectables,
     instancesByInjectableMap,
@@ -98,6 +105,7 @@ export default (containerId, { injectionDecorators = false } = {}) => {
     checkForAbstractToken,
     namespacedIdByInjectableMap,
     getNamespacedId,
+    getApplicableDecorators,
   });
 
   const nonDecoratedPrivateInject = nonDecoratedPrivateInjectUnknownMeta({
@@ -111,8 +119,8 @@ export default (containerId, { injectionDecorators = false } = {}) => {
 
   const withInjectionDecorators = injectionDecorators
     ? withInjectionDecoratorsFor({
-        injectMany: nonDecoratedPrivateInjectMany,
         decoratorCache,
+        getApplicableDecorators,
       })
     : null;
 
@@ -129,7 +137,7 @@ export default (containerId, { injectionDecorators = false } = {}) => {
     : nonDecoratedPrivateInjectWithMeta;
 
   const firePurgeCallbacks = firePurgeCallbacksFor({
-    injectMany: nonDecoratedPrivateInjectMany,
+    getApplicableDecorators,
   });
 
   const rawRegisterSingle = registerSingleFor({
@@ -163,6 +171,7 @@ export default (containerId, { injectionDecorators = false } = {}) => {
 
   const deregister = deregisterFor({
     injectMany: nonDecoratedPrivateInjectMany,
+    getApplicableDecorators,
     injectableSet,
     injectableAndRegistrationContext,
     injectablesByInjectionToken,
@@ -179,6 +188,7 @@ export default (containerId, { injectionDecorators = false } = {}) => {
   const privateRegister = registerFor({
     registerSingle,
     injectMany: nonDecoratedPrivateInjectMany,
+    getApplicableDecorators,
   });
 
   const earlyOverride = earlyOverrideFor({
@@ -262,14 +272,26 @@ export default (containerId, { injectionDecorators = false } = {}) => {
     purge: purgeInstances,
 
     scopedPurge: (scopeInjectable, alias, ...keyParts) => {
+      // Storage shape is dispatched structurally: a CompositeMap holds
+      // keyed entries (keyedSingleton); anything else is a directly-stored
+      // instance (singleton or v2-default-no-args).
+      const clearStoredFor = injectable => {
+        const stored = instancesByInjectableMap.get(injectable);
+        if (stored === undefined) return;
+        if (isCompositeStorage(stored)) {
+          stored.clear();
+          return;
+        }
+        instancesByInjectableMap.delete(injectable);
+      };
+
       if (alias === undefined) {
-        const selfMap = instancesByInjectableMap.get(scopeInjectable);
-        if (selfMap) selfMap.clear();
+        clearStoredFor(scopeInjectable);
 
         const children = childrenByParentMap.get(scopeInjectable);
         if (children) {
           for (const child of children) {
-            instancesByInjectableMap.get(child)?.clear();
+            clearStoredFor(child);
           }
         }
 
@@ -297,12 +319,23 @@ export default (containerId, { injectionDecorators = false } = {}) => {
       }
 
       for (let i = 0; i < injectables.length; i++) {
-        const instanceMap = instancesByInjectableMap.get(injectables[i]);
+        const injectable = injectables[i];
+        const stored = instancesByInjectableMap.get(injectable);
+        if (stored === undefined) continue;
+
+        if (!isCompositeStorage(stored)) {
+          if (keyParts.length === 0) {
+            instancesByInjectableMap.delete(injectable);
+          }
+          // Non-empty keyParts on a directly-stored instance: cache key is
+          // implicit, nothing to delete by prefix.
+          continue;
+        }
 
         if (keyParts.length === 0) {
-          instanceMap.clear();
+          stored.clear();
         } else {
-          instanceMap.deleteByPrefix(keyParts);
+          stored.deleteByPrefix(keyParts);
         }
       }
     },
@@ -312,11 +345,16 @@ export default (containerId, { injectionDecorators = false } = {}) => {
 
     getNumberOfInstances: () => {
       const result = {};
-      for (const [injectable, instanceMap] of instancesByInjectableMap) {
+      for (const [injectable, stored] of instancesByInjectableMap) {
         const namespacedId = namespacedIdByInjectableMap.get(injectable);
         if (!namespacedId) continue;
+
         let count = 0;
-        for (const _ of instanceMap.values()) count++;
+        if (isCompositeStorage(stored)) {
+          for (const _ of stored.values()) count++;
+        } else {
+          count = 1;
+        }
         if (count > 0) result[namespacedId] = count;
       }
       return result;

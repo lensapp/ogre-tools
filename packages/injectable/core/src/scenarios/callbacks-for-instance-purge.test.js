@@ -490,11 +490,9 @@ describe('callbacks-for-instance-purge', () => {
     });
 
     describe('when calling injectMany on the base token directly', () => {
-      it('throws an abstract error', () => {
+      it('returns an empty array (no callbacks registered against the abstract base)', () => {
         const di = createContainer('some-container');
-        expect(() => di.injectMany(instancePurgeCallbackToken)).toThrow(
-          /abstract/,
-        );
+        expect(di.injectMany(instancePurgeCallbackToken)).toEqual([]);
       });
     });
 
@@ -508,6 +506,120 @@ describe('callbacks-for-instance-purge', () => {
         });
         expect(() => di.register(bad)).toThrow(/abstract/);
       });
+    });
+  });
+
+  describe('parent-token chain walk for purge callbacks', () => {
+    it("a callback targeting the parent token fires when a child specialization's instance is purged", () => {
+      const di = createContainer('some-container');
+      const purgeSpy = jest.fn();
+
+      const someToken = getInjectionToken2({ id: 'parent-purge-token' });
+
+      const childInjectable = getInjectable2({
+        id: 'child-purge',
+        injectionToken: someToken.for('some-specifier'),
+        instantiate: () => () => ({ value: 'instance' }),
+      });
+
+      const parentCallback = getInjectable2({
+        id: 'parent-purge-callback',
+        injectionToken: instancePurgeCallbackToken.for(someToken),
+        instantiate:
+          () =>
+          () =>
+          ({ instance }) =>
+          () => {
+            purgeSpy(instance);
+          },
+      });
+
+      di.register(childInjectable, parentCallback);
+
+      const instance = di.inject(childInjectable);
+      di.purge(childInjectable);
+
+      expect(purgeSpy).toHaveBeenCalledTimes(1);
+      expect(purgeSpy).toHaveBeenCalledWith(instance);
+    });
+  });
+
+  describe('tag-keyed purge callbacks', () => {
+    it('a callback targeting a string tag fires when a tagged injectable is purged', () => {
+      const di = createContainer('some-container');
+      const purgeSpy = jest.fn();
+
+      const taggedInjectable = getInjectable2({
+        id: 'tagged-resource',
+        tags: ['resource'],
+        instantiate: () => () => ({ value: 'instance' }),
+      });
+
+      const tagCallback = getInjectable2({
+        id: 'resource-tag-purge-callback',
+        injectionToken: instancePurgeCallbackToken.for('resource'),
+        instantiate:
+          () =>
+          () =>
+          ({ instance }) =>
+          () => {
+            purgeSpy(instance);
+          },
+      });
+
+      di.register(taggedInjectable, tagCallback);
+
+      const instance = di.inject(taggedInjectable);
+      di.purge(taggedInjectable);
+
+      expect(purgeSpy).toHaveBeenCalledTimes(1);
+      expect(purgeSpy).toHaveBeenCalledWith(instance);
+    });
+
+    it('an injectable carrying multiple tags fires every matching tag-keyed callback', () => {
+      const di = createContainer('some-container');
+      const aSpy = jest.fn();
+      const bSpy = jest.fn();
+
+      const dualTagged = getInjectable2({
+        id: 'dual-tagged',
+        tags: ['tag-a', 'tag-b'],
+        instantiate: () => () => ({ value: 'dual' }),
+      });
+
+      const aCallback = getInjectable2({
+        id: 'a-tag-callback',
+        injectionToken: instancePurgeCallbackToken.for('tag-a'),
+        instantiate:
+          () =>
+          () =>
+          ({ instance }) =>
+          () => {
+            aSpy(instance);
+          },
+      });
+
+      const bCallback = getInjectable2({
+        id: 'b-tag-callback',
+        injectionToken: instancePurgeCallbackToken.for('tag-b'),
+        instantiate:
+          () =>
+          () =>
+          ({ instance }) =>
+          () => {
+            bSpy(instance);
+          },
+      });
+
+      di.register(dualTagged, aCallback, bCallback);
+
+      const instance = di.inject(dualTagged);
+      di.purge(dualTagged);
+
+      expect(aSpy).toHaveBeenCalledTimes(1);
+      expect(aSpy).toHaveBeenCalledWith(instance);
+      expect(bSpy).toHaveBeenCalledTimes(1);
+      expect(bSpy).toHaveBeenCalledWith(instance);
     });
   });
 });

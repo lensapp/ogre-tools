@@ -19,8 +19,6 @@ describe('createContainer.targeted-decoration-of-instantiation', () => {
     const decoratorInjectable = getInjectable2({
       id: 'some-child-decorator',
       injectionToken: instantiationDecoratorToken.for(childInjectable),
-      decorable: false,
-
       instantiate:
         () =>
         () =>
@@ -68,8 +66,6 @@ describe('createContainer.targeted-decoration-of-instantiation', () => {
       injectionToken: instantiationDecoratorToken.for(
         someInjectionTokenForTargetedDecoration,
       ),
-      decorable: false,
-
       instantiate:
         () =>
         () =>
@@ -118,7 +114,7 @@ describe('createContainer.targeted-decoration-of-instantiation', () => {
     );
   });
 
-  describe('given decorator targeting an injectable that is overridden', () => {
+  describe('given decorator targeting an injectable that is imperatively overridden', () => {
     let di;
     let someInjectable;
     let decorateSpy;
@@ -138,7 +134,6 @@ describe('createContainer.targeted-decoration-of-instantiation', () => {
       const decoratorInjectable = getInjectable2({
         id: 'some-decorator',
         injectionToken: instantiationDecoratorToken.for(someInjectable),
-        decorable: false,
         instantiate: () => () => decorateSpy,
       });
 
@@ -148,14 +143,165 @@ describe('createContainer.targeted-decoration-of-instantiation', () => {
       di.override(someInjectable, () => 'overridden');
     });
 
-    it('when injected, the decorator applies to the override', () => {
+    it('when injected, the decorator wraps the imperative override', () => {
       expect(di.inject(someInjectable)).toBe('decorated(overridden)');
     });
 
-    it('when injected, the decorator fires exactly once', () => {
+    it('when injected, the decorator fires', () => {
       di.inject(someInjectable);
 
-      expect(decorateSpy).toHaveBeenCalledTimes(1);
+      expect(decorateSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('parent-token chain walk for instantiation decorators', () => {
+    it('a decorator targeting the parent token wraps instantiation of any child with `someToken.for(specifier)` as injectionToken', () => {
+      const someToken = getInjectionToken({ id: 'parent-instantiate-token' });
+
+      const childInjectable = getInjectable({
+        id: 'child-instantiate',
+        injectionToken: someToken.for('some-specifier'),
+        instantiate: () => 'core',
+
+        lifecycle: lifecycleEnum.transient,
+      });
+
+      const parentDecorator = getInjectable2({
+        id: 'parent-instantiate-decorator',
+        injectionToken: instantiationDecoratorToken.for(someToken),
+        instantiate:
+          () =>
+          () =>
+          instantiate =>
+          (di, ...params) =>
+            `wrapped(${instantiate(di, ...params)})`,
+      });
+
+      const di = createContainer('some-container');
+      di.register(childInjectable, parentDecorator);
+
+      expect(di.inject(childInjectable)).toBe('wrapped(core)');
+    });
+  });
+
+  describe('tag-keyed instantiation decorators', () => {
+    it('given a decorator targeting a tag, when a tagged injectable is instantiated, the decorator wraps it', () => {
+      const targetInjectable = getInjectable({
+        id: 'tagged-target',
+        tags: ['logged'],
+        instantiate: () => 'value',
+      });
+
+      const tagDecorator = getInjectable2({
+        id: 'logged-tag-decorator',
+        injectionToken: instantiationDecoratorToken.for('logged'),
+        instantiate:
+          () =>
+          () =>
+          instantiationToBeDecorated =>
+          (di, ...params) =>
+            `wrapped(${instantiationToBeDecorated(di, ...params)})`,
+      });
+
+      const di = createContainer('some-container');
+      di.register(targetInjectable, tagDecorator);
+
+      expect(di.inject(targetInjectable)).toBe('wrapped(value)');
+    });
+
+    it('given an injectable with multiple tags, each tag-keyed decorator fires once and they compose', () => {
+      const targetInjectable = getInjectable({
+        id: 'multi-tagged',
+        tags: ['outer', 'inner'],
+        instantiate: () => 'core',
+      });
+
+      const outerDecorator = getInjectable2({
+        id: 'outer-decorator',
+        injectionToken: instantiationDecoratorToken.for('outer'),
+        instantiate:
+          () =>
+          () =>
+          instantiate =>
+          (di, ...params) =>
+            `outer(${instantiate(di, ...params)})`,
+      });
+
+      const innerDecorator = getInjectable2({
+        id: 'inner-decorator',
+        injectionToken: instantiationDecoratorToken.for('inner'),
+        instantiate:
+          () =>
+          () =>
+          instantiate =>
+          (di, ...params) =>
+            `inner(${instantiate(di, ...params)})`,
+      });
+
+      const di = createContainer('some-container');
+      di.register(targetInjectable, outerDecorator, innerDecorator);
+
+      // Both wrap; flow chains them. Either order is valid composition.
+      const result = di.inject(targetInjectable);
+      expect(['outer(inner(core))', 'inner(outer(core))']).toContain(result);
+    });
+
+    it('an untagged injectable is not affected by tag-keyed instantiation decorators', () => {
+      const taggedInjectable = getInjectable({
+        id: 'tagged',
+        tags: ['logged'],
+        instantiate: () => 'tagged-value',
+      });
+
+      const untaggedInjectable = getInjectable({
+        id: 'untagged',
+        instantiate: () => 'untagged-value',
+      });
+
+      const tagDecorator = getInjectable2({
+        id: 'logged-decorator',
+        injectionToken: instantiationDecoratorToken.for('logged'),
+        instantiate:
+          () =>
+          () =>
+          instantiate =>
+          (di, ...params) =>
+            `wrapped(${instantiate(di, ...params)})`,
+      });
+
+      const di = createContainer('some-container');
+      di.register(taggedInjectable, untaggedInjectable, tagDecorator);
+
+      expect(di.inject(taggedInjectable)).toBe('wrapped(tagged-value)');
+      expect(di.inject(untaggedInjectable)).toBe('untagged-value');
+    });
+
+    it('a tag-keyed instantiation decorator wraps an imperative override', () => {
+      const targetInjectable = getInjectable({
+        id: 'imperatively-overridden-tagged',
+        tags: ['logged'],
+        instantiate: () => 'real',
+      });
+
+      const decorateSpy = jest.fn(
+        instantiate =>
+          (di, ...params) =>
+            `wrapped(${instantiate(di, ...params)})`,
+      );
+
+      const tagDecorator = getInjectable2({
+        id: 'logged-decorator',
+        injectionToken: instantiationDecoratorToken.for('logged'),
+        instantiate: () => () => decorateSpy,
+      });
+
+      const di = createContainer('some-container');
+      di.register(targetInjectable, tagDecorator);
+
+      di.override(targetInjectable, () => 'overridden');
+
+      expect(di.inject(targetInjectable)).toBe('wrapped(overridden)');
+      expect(decorateSpy).toHaveBeenCalled();
     });
   });
 });

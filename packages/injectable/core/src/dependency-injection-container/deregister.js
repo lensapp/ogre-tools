@@ -12,6 +12,7 @@ import flow from './fastFlow';
 export const deregisterFor =
   ({
     injectMany,
+    getApplicableDecorators,
     injectableSet,
     injectableAndRegistrationContext,
     injectablesByInjectionToken,
@@ -62,27 +63,11 @@ export const deregisterFor =
         decoratorCache.injection = null;
       }
 
-      if (injectable.decorable === false) {
-        deregisterSingle(injectable);
-        return;
-      }
-
-      const decorators = [
-        ...injectMany({
-          alias: deregistrationDecoratorToken.for(injectable),
-          instantiationParameters: [],
-          injectingInjectable: source,
-        }),
-        ...(injectable.injectionToken
-          ? injectMany({
-              alias: deregistrationDecoratorToken.for(
-                injectable.injectionToken,
-              ),
-              instantiationParameters: [],
-              injectingInjectable: source,
-            })
-          : []),
-      ];
+      const decorators = getApplicableDecorators({
+        decoratorToken: deregistrationDecoratorToken,
+        target: injectable,
+        injectingInjectable: source,
+      });
 
       if (decorators.length === 0) {
         deregisterSingle(injectable);

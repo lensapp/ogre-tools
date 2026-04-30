@@ -60,8 +60,6 @@ describe('computedInjectMaybe with instantiation parameter', () => {
           (...params) =>
             toBeDecorated(...params),
 
-        decorable: false,
-
         injectionToken: injectionDecoratorToken.for(someInjectable),
       });
 

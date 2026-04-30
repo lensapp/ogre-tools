@@ -3,6 +3,7 @@ import {
   AbstractInjectionToken2,
   DiContainer,
   DiContainerForInjection,
+  Factory,
   Injectable,
   Injectable2,
   InjectionToken,
@@ -11,10 +12,8 @@ import {
   SpecificInjectionToken2,
 } from '@lensapp/injectable';
 
-export function useInject<F extends (...args: any[]) => any>(
-  injectable:
-    | Injectable2<F>
-    | (InjectionToken2<F> & { readonly __abstract?: never }),
+export function useInject<F extends Factory>(
+  injectable: Injectable2<F> | InjectionToken2<F>,
   ...params: Parameters<F>
 ): Awaited<ReturnType<F>>;
 
@@ -29,10 +28,8 @@ export function useInject<TReturnValue, TInstantiationParameter>(
   instantiationParameter: TInstantiationParameter,
 ): Awaited<TReturnValue>;
 
-export function useInjectDeferred<F extends (...args: any[]) => any>(
-  injectable:
-    | Injectable2<F>
-    | (InjectionToken2<F> & { readonly __abstract?: never }),
+export function useInjectDeferred<F extends Factory>(
+  injectable: Injectable2<F> | InjectionToken2<F>,
   ...params: Parameters<F>
 ): Awaited<ReturnType<F>>;
 
@@ -47,11 +44,9 @@ export function useInjectDeferred<TReturnValue, TInstantiationParameter>(
   instantiationParameter: TInstantiationParameter,
 ): Awaited<TReturnValue>;
 
-export function useInject2<F extends (...args: any[]) => any>(
-  alias: Injectable2<F>,
-): F;
-export function useInject2<F extends (...args: any[]) => any>(
-  alias: InjectionToken2<F> & { readonly __abstract?: never },
+export function useInject2<F extends Factory>(alias: Injectable2<F>): F;
+export function useInject2<F extends Factory>(
+  alias: InjectionToken2<F>,
 ): F;
 export function useInject2<TReturnValue>(
   alias: Injectable<TReturnValue, any> | InjectionToken<TReturnValue>,
@@ -70,7 +65,7 @@ export function useInject2<TReturnValue, TInstantiationParameter>(
 export type InjectableComponent<Component extends React.ComponentType<any>> =
   Component & Injectable<Component>;
 
-type ExcludedKeys = 'instantiate' | 'lifecycle' | 'scope' | 'decorable' | 'injectionToken';
+type ExcludedKeys = 'instantiate' | 'lifecycle' | 'scope' | 'injectionToken';
 
 export declare function getInjectableComponent<
   Component extends React.ComponentType<any>
@@ -88,7 +83,7 @@ export declare function getInjectableComponent<
 export type InjectableComponent2<Component extends React.ComponentType<any>> =
   Component & Injectable2<() => Component>;
 
-type ExcludedKeys2 = 'aliasType' | 'instantiate' | 'decorable' | 'injectionToken';
+type ExcludedKeys2 = 'aliasType' | 'instantiate' | 'injectionToken';
 
 export declare function getInjectableComponent2<
   Component extends React.ComponentType<any>
@@ -97,7 +92,7 @@ export declare function getInjectableComponent2<
     id: string;
     Component: Component;
     PlaceholderComponent?: React.ComponentType<React.ComponentProps<Component>>;
-    injectionToken?: InjectionToken2<() => Component> & { readonly __abstract?: never };
+    injectionToken?: InjectionToken2<() => Component>;
   },
 ): InjectableComponent2<Component>;
 
@@ -124,7 +119,6 @@ export declare function getInjectionTokenComponent<
 >(options: {
   id: string;
   PlaceholderComponent?: React.ComponentType<React.ComponentProps<Component>>;
-  decorable?: boolean;
   specificInjectionTokenFactory?: SpecificFactory;
 }): InjectionTokenComponent<Component, SpecificFactory>;
 
@@ -151,7 +145,6 @@ export declare function getInjectionTokenComponent2<
 >(options: {
   id: string;
   PlaceholderComponent?: React.ComponentType<React.ComponentProps<Component>>;
-  decorable?: boolean;
   specificInjectionTokenFactory?: SpecificFactory;
 }): InjectionTokenComponent2<Component, SpecificFactory>;
 
@@ -174,7 +167,6 @@ export declare function getAbstractInjectionTokenComponent2<
 >(options: {
   id: string;
   PlaceholderComponent?: React.ComponentType<React.ComponentProps<Component>>;
-  decorable?: boolean;
   specificInjectionTokenFactory?: SpecificFactory;
 }): AbstractInjectionTokenComponent2<Component, SpecificFactory>;
 

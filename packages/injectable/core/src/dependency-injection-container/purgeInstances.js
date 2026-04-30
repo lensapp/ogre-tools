@@ -1,3 +1,8 @@
+import { storedInstanceKey } from './lifecycleEnum';
+import { isCompositeStorage } from './privateInjectFor';
+
+const singletonKeyArray = [storedInstanceKey];
+
 const keyArrayStartsWith = (keyArray, prefix) => {
   if (prefix.length > keyArray.length) return false;
   for (let i = 0; i < prefix.length; i++) {
@@ -15,14 +20,32 @@ export const purgeInstancesFor =
         ? [...instancesByInjectableMap.keys()]
         : getRelatedInjectables(alias);
 
-    // Phase 1 — Gather snapshot tuples without mutating caches
+    // Phase 1 — Gather snapshot tuples without mutating caches. The stored
+    // value is dispatched structurally: a CompositeMap-shape stores keyed
+    // entries; anything else is a directly-stored instance (singleton or
+    // v2-default-no-args).
     const tuples = [];
 
     for (const injectable of injectablesInScope) {
-      const instanceMap = instancesByInjectableMap.get(injectable);
-      if (!instanceMap) continue;
+      const stored = instancesByInjectableMap.get(injectable);
+      if (stored === undefined) continue;
 
-      for (const [keyArray, instance] of instanceMap.entries()) {
+      if (!isCompositeStorage(stored)) {
+        if (
+          keyParts.length > 0 &&
+          !keyArrayStartsWith(singletonKeyArray, keyParts)
+        ) {
+          continue;
+        }
+        tuples.push({
+          injectable,
+          instance: stored,
+          keyArray: singletonKeyArray,
+        });
+        continue;
+      }
+
+      for (const [keyArray, instance] of stored.entries()) {
         if (keyParts.length > 0 && !keyArrayStartsWith(keyArray, keyParts)) {
           continue;
         }
@@ -39,13 +62,23 @@ export const purgeInstancesFor =
     // Phase 3 — Evict. Sweeps both the original snapshot entries and anything
     // re-populated by phase 2 callbacks. Callbacks do NOT re-fire here.
     for (const injectable of injectablesInScope) {
-      const instanceMap = instancesByInjectableMap.get(injectable);
-      if (!instanceMap) continue;
+      const stored = instancesByInjectableMap.get(injectable);
+      if (stored === undefined) continue;
+
+      if (!isCompositeStorage(stored)) {
+        if (
+          keyParts.length === 0 ||
+          keyArrayStartsWith(singletonKeyArray, keyParts)
+        ) {
+          instancesByInjectableMap.delete(injectable);
+        }
+        continue;
+      }
 
       if (keyParts.length === 0) {
-        instanceMap.clear();
+        stored.clear();
       } else {
-        instanceMap.deleteByPrefix(keyParts);
+        stored.deleteByPrefix(keyParts);
       }
     }
   };
