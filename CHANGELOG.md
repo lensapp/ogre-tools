@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.2.0](https://github.com/lensapp/ogre-tools/compare/v22.1.0...v22.2.0) (2026-05-04)
+
+### Features
+
+- **injectable:** Override-as-injectable via instantiationDecoratorToken ([58599cf](https://github.com/lensapp/ogre-tools/commit/58599cf4907e0c4610a8130246b7f9f6c36eada6))
+- **injectable:** Tag-keyed dispatch for every targeted decorator/callback ([40a6d5a](https://github.com/lensapp/ogre-tools/commit/40a6d5a5782d866e52250c0ddcc6553bb82ba8fb))
+- **injectable:** Walk specificTokenOf chain at decorator dispatch sites ([26c557c](https://github.com/lensapp/ogre-tools/commit/26c557cfa38bd3c5a28b335deeafcda0479268a9))
+
+### Performance Improvements
+
+- **injectable:** Direct-store v2-default no-args injects, closing the v1/v2 gap ([fb4556e](https://github.com/lensapp/ogre-tools/commit/fb4556e10bb3f81b3ab391d6bc4e927103cfda41))
+- **injectable:** Skip decorator dispatch and direct-store singletons in hot paths ([1ff6925](https://github.com/lensapp/ogre-tools/commit/1ff69255db02f229ce68d813adbbd994ef67eef1))
+- **injectable:** Trim per-call overhead in inject, injectMany and register hot loops ([93baddd](https://github.com/lensapp/ogre-tools/commit/93baddd995a6741422f4d1157b6e3f0a80341bbb))
+
 ## [22.1.0](https://github.com/lensapp/ogre-tools/compare/v22.0.0...v22.1.0) (2026-04-24)
 
 ### Features
