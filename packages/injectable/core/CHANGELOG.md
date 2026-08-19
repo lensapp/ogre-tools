@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.0.0](https://github.com/lensapp/ogre-tools/compare/v22.4.0...v23.0.0) (2026-08-19)
+
+### ⚠ BREAKING CHANGES
+
+- **injectable:** createContainer no longer accepts an options bag.
+  Injection decorators fire without { injectionDecorators: true };
+  passing it is now a type error (ignored at runtime).
+
+### Features
+
+- **injectable:** Add preInjectCallbackToken fired once per inject and injectMany ([b62299f](https://github.com/lensapp/ogre-tools/commit/b62299fd41db6a21a170205951ca3bb902cfb2e5))
+- **injectable:** Add tags with initial injectionToken tag to getInjectionToken ([1f692bb](https://github.com/lensapp/ogre-tools/commit/1f692bbdbeb774414f7db2b05de3a72f384ecfce))
+- **injectable:** Add tags with initial injectionToken tag to getInjectionToken2 ([d9ee230](https://github.com/lensapp/ogre-tools/commit/d9ee2305364d9e4b6d21a83d05efce494aa25bec))
+- **injectable:** Dispatch tag-keyed decorators for tags of the target's token chain ([7b7e7dd](https://github.com/lensapp/ogre-tools/commit/7b7e7dd0d3eb45a8ce09514b2fd8428ec43ddb91))
+- **injectable:** Exempt built-in machinery tokens from tags ([0e591b1](https://github.com/lensapp/ogre-tools/commit/0e591b1129cf7345250bc1f23f3b48ed5a5142ad))
+- **injectable:** Remove the injectionDecorators container option ([8b7ba6b](https://github.com/lensapp/ogre-tools/commit/8b7ba6ba2e61a67c971869247d862d1c461a23b6))
+
+### Performance Improvements
+
+- **injectable:** Memoize .for() by specifier and skip empty decorator lookups ([7c297fa](https://github.com/lensapp/ogre-tools/commit/7c297fae350e033d88fe0099d1f4d2be0a2fc974))
+
 ## [22.4.0](https://github.com/lensapp/ogre-tools/compare/v22.3.0...v22.4.0) (2026-08-17)
 
 ### Features

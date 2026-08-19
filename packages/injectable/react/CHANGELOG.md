@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.0.0](https://github.com/lensapp/ogre-tools/compare/v22.4.0...v23.0.0) (2026-08-19)
+
+### Features
+
+- **injectable-react:** Thread tags through injection token components ([4fbba26](https://github.com/lensapp/ogre-tools/commit/4fbba268f312a071d69c5582f95a0805176a7fff))
+
 ## [22.4.0](https://github.com/lensapp/ogre-tools/compare/v22.3.0...v22.4.0) (2026-08-17)
 
 **Note:** Version bump only for package @lensapp/injectable-react
