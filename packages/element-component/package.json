@@ -30,7 +30,7 @@
   "files": [
     "build"
   ],
-  "author": "Ogre Works",
+  "author": "Mirantis",
   "license": "MIT",
   "homepage": "https://github.com/lensapp/ogre-tools#readme",
   "peerDependencies": {

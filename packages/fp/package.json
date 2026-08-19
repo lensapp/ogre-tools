@@ -30,7 +30,7 @@
     "js",
     "functional-programming"
   ],
-  "author": "Ogre Works",
+  "author": "Mirantis",
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.21"
