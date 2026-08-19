@@ -27,7 +27,7 @@
     "postinstall": "husky install"
   },
   "keywords": [],
-  "author": "Ogre Works",
+  "author": "Mirantis",
   "license": "MIT",
   "devDependencies": {
     "@async-fn/jest": "^1.6.4",

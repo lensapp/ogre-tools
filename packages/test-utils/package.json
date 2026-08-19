@@ -31,7 +31,7 @@
     "jest",
     "unit-testing"
   ],
-  "author": "Ogre Works",
+  "author": "Mirantis",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lensapp/ogre-tools/issues"
