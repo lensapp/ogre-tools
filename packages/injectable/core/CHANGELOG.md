@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.1.0](https://github.com/lensapp/ogre-tools/compare/v23.0.0...v23.1.0) (2026-08-20)
+
+### Features
+
+- **injectable:** Pass the injecting injectable to pre-inject callbacks ([d787de6](https://github.com/lensapp/ogre-tools/commit/d787de6908a2da0604151fe3d3e94b6e1a01552a))
+
 ## [23.0.0](https://github.com/lensapp/ogre-tools/compare/v22.4.0...v23.0.0) (2026-08-19)
 
 ### ⚠ BREAKING CHANGES
