@@ -789,6 +789,8 @@ import {
   SingleInjectionToken2,
   Consumption,
   ConsumptionDi,
+  ValidationReport,
+  UnverifiableConsumption,
   MaybeInjectionToken2,
   ManyInjectionToken2,
   NonEmptyManyInjectionToken2,
@@ -2436,3 +2438,23 @@ getInjectable2({
     return () => 'irrelevant';
   },
 });
+
+// ==== validate ====
+
+expectType<ValidationReport>(di.validate());
+expectType<number>(di.validate().verifiedInjectables.count);
+expectType<string[]>(di.validate().verifiedInjectables.ids);
+expectType<number>(di.validate().unverifiedInjectables.count);
+expectType<string[]>(di.validate().unverifiedInjectables.ids);
+expectType<UnverifiableConsumption[]>(
+  di.validate().unverifiableConsumptions,
+);
+expectType<string>(di.validate().unverifiableConsumptions[0].injectableId);
+expectType<string>(di.validate().unverifiableConsumptions[0].consumptionId);
+
+// validating takes no arguments
+expectError(di.validate('some-argument'));
+
+// creating a container is unchanged — validation is a container method, not an
+// option
+expectType<DiContainer>(createContainer('some-container'));
