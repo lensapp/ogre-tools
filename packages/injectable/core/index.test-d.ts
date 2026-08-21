@@ -2659,3 +2659,37 @@ expectError(
     aliasType: 'injectable2',
   }),
 );
+
+// ==== instantiation decorators of v1 targets keep the target's typing ====
+
+// The decorated instantiate is the target's own, not Instantiate<any, any>,
+// so its parameter and the factory it returns are both checked.
+const someFunctionInjectableToBeDecorated = getInjectable({
+  id: 'some-function-injectable-to-be-decorated',
+  instantiate: (di, param) => (arg1: string, arg2: boolean) => {},
+
+  lifecycle: lifecycleEnum.keyedSingleton({
+    getInstanceKey: (di, param: number) => param,
+  }),
+});
+
+getInjectable2({
+  id: 'some-function-decoration',
+  injectionToken: instantiationDecoratorToken.for(
+    someFunctionInjectableToBeDecorated,
+  ),
+
+  instantiate:
+    () =>
+    () =>
+    instantiate =>
+    (di, param) =>
+    (arg1, arg2) => {
+      expectType<
+        Instantiate<(arg1: string, arg2: boolean) => void, number>
+      >(instantiate);
+      expectType<number>(param);
+      expectType<string>(arg1);
+      expectType<boolean>(arg2);
+    },
+});
