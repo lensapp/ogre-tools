@@ -2625,3 +2625,37 @@ expectError(di.validate('some-argument'));
 // creating a container is unchanged — validation is a container method, not an
 // option
 expectType<DiContainer>(createContainer('some-container'));
+
+// ==== aliasType is exposed on every alias ====
+
+// The runtime sets it on all four, so all four expose it.
+expectType<'injectable'>(someInjectableWithoutInstantiationParameter.aliasType);
+expectType<'injection-token'>(someInjectionToken.aliasType);
+expectType<'injectable2'>(nonParametricInjectable2.aliasType);
+expectType<'injection-token2'>(cardinalityOneToken.aliasType);
+
+// Abstract tokens are built by the same creator as concrete ones, so they
+// carry the same alias type; `__abstract` is what tells them apart.
+expectType<'injection-token2'>(abstractHandlerToken.aliasType);
+expectType<true>(abstractHandlerToken.__abstract);
+
+// `.for()` children inherit it.
+expectType<'injection-token'>(someInjectionToken.for('a').aliasType);
+expectType<'injection-token2'>(cardinalityOneToken.for('a').aliasType);
+
+// Creating an alias must not require passing it.
+expectError(
+  getInjectable({
+    id: 'alias-type-is-not-an-option',
+    instantiate: () => 'irrelevant',
+    aliasType: 'injectable',
+  }),
+);
+
+expectError(
+  getInjectable2({
+    id: 'alias-type-is-not-an-option-2',
+    instantiate: () => () => 'irrelevant',
+    aliasType: 'injectable2',
+  }),
+);
