@@ -2693,3 +2693,68 @@ getInjectable2({
       expectType<boolean>(arg2);
     },
 });
+
+// ==== instantiation decorators targeting a tag keep the target's shape ====
+
+// A tag says nothing about what carries it, so a decorator targeting one is
+// generic in whatever it decorates — which still forces it to pass the
+// instantiation parameters through faithfully.
+
+// given the parameters are spread through, typing is OK
+getInjectable2({
+  id: 'some-tag-decoration',
+  injectionToken: instantiationDecoratorToken.for('some-tag'),
+
+  instantiate:
+    () =>
+    () =>
+    instantiate =>
+    (di, ...params) =>
+      instantiate(di, ...params),
+});
+
+// given a single parameter is declared, typing is not OK — a target may take
+// any number of them
+expectError(
+  getInjectable2({
+    id: 'some-tag-decoration-declaring-one-parameter',
+    injectionToken: instantiationDecoratorToken.for('some-tag'),
+
+    instantiate:
+      () =>
+      () =>
+      instantiate =>
+      (di, param) =>
+        instantiate(di, param),
+  }),
+);
+
+// given the spread parameters are passed on as a single one, typing is not OK
+expectError(
+  getInjectable2({
+    id: 'some-tag-decoration-passing-parameters-as-one',
+    injectionToken: instantiationDecoratorToken.for('some-tag'),
+
+    instantiate:
+      () =>
+      () =>
+      instantiate =>
+      (di, ...params) =>
+        instantiate(di, params),
+  }),
+);
+
+// given the decorator returns something other than the instance, typing is not OK
+expectError(
+  getInjectable2({
+    id: 'some-tag-decoration-returning-a-wrong-type',
+    injectionToken: instantiationDecoratorToken.for('some-tag'),
+
+    instantiate:
+      () =>
+      () =>
+      instantiate =>
+      (di, ...params) =>
+        42,
+  }),
+);
