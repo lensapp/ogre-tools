@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/lensapp/ogre-tools/compare/v23.1.0...v24.0.0) (2026-08-24)
+
+### ⚠ BREAKING CHANGES
+
+- **injectable:** di.injectMaybe on the root container is now
+  di.injectMaybe2. The member of the same name inside an `instantiate` is
+  unchanged.
+- **injectable:** the `specificCardinality` option is gone; declare the
+  cardinality in the specificInjectionTokenFactory instead.
+- **injectable:** an injectable2 that injects injection tokens must
+  declare them in `consumptions`, and `instantiate` must not annotate its
+  `di` parameter as DiContainerForInjection2 — use the contextual type, or
+  ConsumptionDi<typeof someToken> for an instantiate defined elsewhere.
+- **injectable-mobx:** passing a v2 injection token whose cardinality does not
+  match the helper no longer typechecks, and the maybe-helpers throw on
+  one at runtime.
+- **injectable-react:** passing a v2 injection token of any cardinality other
+  than 'one' to an injection hook no longer typechecks.
+- **injectable:** `getInjectionToken2`, `getAbstractInjectionToken2` and
+  `getSpecificInjectionToken2` are curried and require a cardinality:
+  `getInjectionToken2<F>()({ id, cardinality })`. Currying is what lets
+  the options value drive inference — the `.for()` factory's type is now
+  inferred from the factory itself instead of being spelled out as a type
+  argument. Tokens consumed both singly and as a group are two tokens.
+
+### Features
+
+- **injectable-mobx:** Gate computed inject helpers on cardinality ([69175d8](https://github.com/lensapp/ogre-tools/commit/69175d8aeaa20759d0755a86205b53acaa08df54))
+- **injectable-react:** Gate injection hooks on cardinality ([1b5c1b0](https://github.com/lensapp/ogre-tools/commit/1b5c1b0285e1f795abcdd02f626a59900a93a8cb))
+- **injectable:** Add consumption declarations to injectable2 ([aa62130](https://github.com/lensapp/ogre-tools/commit/aa62130404124a7895e14d78543b68566d5adfc5))
+- **injectable:** Add container validate() ([4e45a1d](https://github.com/lensapp/ogre-tools/commit/4e45a1dd3e94be500282be6ab2c8aabd4560d14c))
+- **injectable:** Add injectMaybe for zero-or-one injection tokens ([848a53a](https://github.com/lensapp/ogre-tools/commit/848a53a9955d806967418556a89f9f9ef8e48533))
+- **injectable:** Require cardinality on injection tokens ([fb14334](https://github.com/lensapp/ogre-tools/commit/fb14334b2e22544cc4d16632fa94f16d13f4bf33))
+
+### Bug Fixes
+
+- **injectable:** Expose the aliasType of every alias ([5a8c598](https://github.com/lensapp/ogre-tools/commit/5a8c598848066f8c4824632d274c1edddc7fcb86))
+- **injectable:** Fire instance-purge callbacks on scope-restricted purge ([daeb13c](https://github.com/lensapp/ogre-tools/commit/daeb13cba6626c10bcf7956b69592a47ae8a988d))
+- **injectable:** Let the specific token factory declare its cardinality ([20115a9](https://github.com/lensapp/ogre-tools/commit/20115a9b6708984a9489ff1b0e1fb9f5aa97e930))
+- **injectable:** Require a maybe factory to admit undefined ([f589686](https://github.com/lensapp/ogre-tools/commit/f589686489658eefc7c07adc7cd7c85be4b24a68))
+- **injectable:** Type instantiation decorators of v1 targets from the target ([7171a8f](https://github.com/lensapp/ogre-tools/commit/7171a8fc691058cff11b5ad83633cf71dd9d94cf))
+- **injectable:** Type instantiation decorators targeting a tag ([b383e62](https://github.com/lensapp/ogre-tools/commit/b383e626ba36d7f7e73eeac199dafeffbf8ebd12))
+
+### Performance Improvements
+
+- **injectable:** Skip the purge snapshot when nothing observes it ([bc9c534](https://github.com/lensapp/ogre-tools/commit/bc9c5348f6995542e77b67d86adcd416817989be))
+
+### Code Refactoring
+
+- **injectable:** Name the root container's maybe member injectMaybe2 ([85300cd](https://github.com/lensapp/ogre-tools/commit/85300cdccdcff24828af34b82232c848f4c52479))
+
 ## [23.1.0](https://github.com/lensapp/ogre-tools/compare/v23.0.0...v23.1.0) (2026-08-20)
 
 ### Features

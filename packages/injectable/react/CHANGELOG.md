@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/lensapp/ogre-tools/compare/v23.1.0...v24.0.0) (2026-08-24)
+
+### ⚠ BREAKING CHANGES
+
+- **injectable-react:** passing a v2 injection token of any cardinality other
+  than 'one' to an injection hook no longer typechecks.
+- **injectable:** `getInjectionToken2`, `getAbstractInjectionToken2` and
+  `getSpecificInjectionToken2` are curried and require a cardinality:
+  `getInjectionToken2<F>()({ id, cardinality })`. Currying is what lets
+  the options value drive inference — the `.for()` factory's type is now
+  inferred from the factory itself instead of being spelled out as a type
+  argument. Tokens consumed both singly and as a group are two tokens.
+
+### Features
+
+- **injectable-react:** Gate injection hooks on cardinality ([1b5c1b0](https://github.com/lensapp/ogre-tools/commit/1b5c1b0285e1f795abcdd02f626a59900a93a8cb))
+- **injectable:** Require cardinality on injection tokens ([fb14334](https://github.com/lensapp/ogre-tools/commit/fb14334b2e22544cc4d16632fa94f16d13f4bf33))
+
+### Bug Fixes
+
+- **injectable:** Expose the aliasType of every alias ([5a8c598](https://github.com/lensapp/ogre-tools/commit/5a8c598848066f8c4824632d274c1edddc7fcb86))
+
 ## [23.1.0](https://github.com/lensapp/ogre-tools/compare/v23.0.0...v23.1.0) (2026-08-20)
 
 **Note:** Version bump only for package @lensapp/injectable-react
