@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.1.0](https://github.com/lensapp/ogre-tools/compare/v24.0.0...v24.1.0) (2026-08-25)
+
+### Features
+
+- **injectable:** Add explicit-generic overloads to getAbstractInjectionToken2 ([ac0f5e1](https://github.com/lensapp/ogre-tools/commit/ac0f5e12e2431bbd694923b0bf6cf7098fb71ac4))
+
 ## [24.0.0](https://github.com/lensapp/ogre-tools/compare/v23.1.0...v24.0.0) (2026-08-24)
 
 ### ⚠ BREAKING CHANGES
