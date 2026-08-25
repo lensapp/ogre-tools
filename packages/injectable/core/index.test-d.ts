@@ -2858,3 +2858,31 @@ expectError(
         42,
   }),
 );
+
+// injectMany works on v1 injection tokens with generic specific injection factories
+
+type SomeInjectManySpecifier<Req, Res> = TypedSpecifier<
+  string,
+  { req: Req; res: Res }
+>;
+
+const someGenericSpecificFactoryToken = getInjectionToken<
+  (req: unknown) => unknown,
+  void,
+  <Req, Res>(
+    specifier: SomeInjectManySpecifier<Req, Res>,
+  ) => SpecificInjectionToken<(req: Req) => Res, void>
+>({
+  id: 'some-generic-specific-factory-token',
+});
+
+expectType<((req: unknown) => unknown)[]>(
+  di.injectMany(someGenericSpecificFactoryToken),
+);
+expectType<((req: string) => number)[]>(
+  di.injectMany(
+    someGenericSpecificFactoryToken.for(
+      getTypedSpecifier<{ req: string; res: number }>()('some-specifier'),
+    ),
+  ),
+);
