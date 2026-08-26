@@ -2886,3 +2886,27 @@ expectType<((req: string) => number)[]>(
     ),
   ),
 );
+
+// injectManyWithMeta and injectWithMeta work on the same tokens correctly
+
+expectType<InjectionInstanceWithMeta<(req: unknown) => unknown>[]>(
+  di.injectManyWithMeta(someGenericSpecificFactoryToken),
+);
+expectType<InjectionInstanceWithMeta<(req: string) => number>[]>(
+  di.injectManyWithMeta(
+    someGenericSpecificFactoryToken.for(
+      getTypedSpecifier<{ req: string; res: number }>()('some-specifier'),
+    ),
+  ),
+);
+
+expectType<InjectionInstanceWithMeta<(req: unknown) => unknown>>(
+  di.injectWithMeta(someGenericSpecificFactoryToken),
+);
+expectType<InjectionInstanceWithMeta<(req: string) => number>>(
+  di.injectWithMeta(
+    someGenericSpecificFactoryToken.for(
+      getTypedSpecifier<{ req: string; res: number }>()('some-specifier'),
+    ),
+  ),
+);
