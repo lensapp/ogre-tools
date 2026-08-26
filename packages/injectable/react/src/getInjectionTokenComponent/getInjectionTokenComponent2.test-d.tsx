@@ -63,8 +63,9 @@ expectAssignable<React.ComponentType<{ someProp: string }>>(
 );
 
 // given contradictory component, typing is not ok
-const SomeComponentWithWrongProps: React.ComponentType<{ someProp: number }> =
-  ({ someProp }) => <div>{someProp}</div>;
+const SomeComponentWithWrongProps: React.ComponentType<{
+  someProp: number;
+}> = ({ someProp }) => <div>{someProp}</div>;
 
 expectError(
   getInjectableComponent2({
@@ -125,10 +126,9 @@ const SomeTokenComponentWithTypedSpecifier = getInjectionTokenComponent2<
   >
 >({ id: 'irrelevant' });
 
-const someTypedSpecifier =
-  getTypedSpecifier<{ someSpecifier: { someProp: 'some-type' } }>()(
-    'irrelevant',
-  );
+const someTypedSpecifier = getTypedSpecifier<{
+  someSpecifier: { someProp: 'some-type' };
+}>()('irrelevant');
 
 const SomeInjectableComponentForTypedSpecifier = getInjectableComponent2({
   id: 'irrelevant',
