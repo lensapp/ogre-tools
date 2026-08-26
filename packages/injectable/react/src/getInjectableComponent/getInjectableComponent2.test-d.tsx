@@ -294,10 +294,9 @@ const someInjectionTokenWithTypedSpecifier = getInjectionToken2<
   cardinality: 'zero-or-many',
 });
 
-const someTypedSpecifier =
-  getTypedSpecifier<{ someSpecifier: { someProp: 'some-type' } }>()(
-    'irrelevant',
-  );
+const someTypedSpecifier = getTypedSpecifier<{
+  someSpecifier: { someProp: 'some-type' };
+}>()('irrelevant');
 
 const SomeInjectableComponentForTypedSpecifier = getInjectableComponent2({
   id: 'irrelevant',
