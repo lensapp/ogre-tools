@@ -3,6 +3,82 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [25.0.0](https://github.com/lensapp/ogre-tools/compare/v24.1.0...v25.0.0) (2026-08-27)
+
+### ⚠ BREAKING CHANGES
+
+- marker on any of them. This commit's marker is what
+  makes conventional-commits tooling recommend major for the upcoming
+  release instead of minor.
+- getInjectionToken2 and getInjectionTokenComponent2
+  (injectable-react) drop their outer empty curry -- options are now the
+  direct first call, with the `.for()` factory moved out of options into
+  an optional trailing call instead of an options property:
+
+  // before
+  getInjectionToken2<F>()({ id, cardinality, specificInjectionTokenFactory: factory })
+  getInjectionTokenComponent2<Component>({ id, specificInjectionTokenFactory: factory })
+
+  // after
+  getInjectionToken2<F>({ id, cardinality })(factory)
+  getInjectionTokenComponent2<Component>({ id })(factory)
+
+getAbstractInjectionToken2 and getAbstractInjectionTokenComponent2 are
+removed. Supplying a factory to the trailing call above is what makes a
+token abstract now; omitting it makes a concrete token, same creator
+either way:
+
+// before
+getAbstractInjectionToken2<F>()({ id, cardinality, specificInjectionTokenFactory: factory })
+
+// after
+getInjectionToken2<F>({ id, cardinality })(factory)
+
+getSpecificInjectionToken2 is removed. Options carrying `speciality`
+now route through the same getInjectionToken2, which also accepts the
+trailing factory, so a specific token can itself be a family root:
+
+// before
+getSpecificInjectionToken2<F>()({ id, speciality, cardinality })
+
+// after
+getInjectionToken2<F>({ id, speciality, cardinality })(factory?)
+
+A token built with no factory now has no `.for` at all, not a working
+default: previously, omitting `specificInjectionTokenFactory` still
+produced a working recursive id-keyed `.for()` at runtime. Now,
+`getInjectionToken2<F>(options)()` (empty trailing call) yields a
+token with no `.for` property in its type -- a compile error to
+access -- and no `for` key on the runtime object. Supply a factory
+explicitly whenever `.for()` is needed, even a trivial recursive one.
+
+### Features
+
+- **injectable-react:** Make component token creators consistent with core ([c78b686](https://github.com/lensapp/ogre-tools/commit/c78b68680d8164ab9b1759eb31de8dd29f4e72e1))
+- **injectable-react:** Mirror the automatic-abstract change for component tokens ([f377563](https://github.com/lensapp/ogre-tools/commit/f377563f3e536905d1fb8aa8980fc5576d8c6aa3))
+- **injectable-react:** Mirror the getSpecificInjectionToken2 fold for component tokens ([15551d2](https://github.com/lensapp/ogre-tools/commit/15551d2415a37acb3381cabd48a86ea6b0d29709))
+- **injectable-react:** Mirror the no-factory .for() change for component tokens ([a9b1022](https://github.com/lensapp/ogre-tools/commit/a9b1022be77f8c606b87dbb1e90821b9c9a96b66))
+- **injectable:** Flatten getInjectionToken2's explicit-SF overload ([13b2144](https://github.com/lensapp/ogre-tools/commit/13b214413bcf31e6918671f9771d3f9c4f799391))
+- **injectable:** Fold getSpecificInjectionToken2 into getInjectionToken2 ([8389575](https://github.com/lensapp/ogre-tools/commit/83895753939034de8db770de1c2acabff13cbe36))
+- **injectable:** Infer generic .for() factories on getAbstractInjectionToken2 ([fa1febf](https://github.com/lensapp/ogre-tools/commit/fa1febf30a58bcaf8f278cd63ba463decfcf35d1))
+- **injectable:** Infer generic .for() factories via a curried factory call ([3a5b3db](https://github.com/lensapp/ogre-tools/commit/3a5b3db189ec6bbe532ff7addf4d2d16795c5de4))
+- **injectable:** Make getAbstractInjectionToken2 automatic and remove it ([633128c](https://github.com/lensapp/ogre-tools/commit/633128ce0288709214929b32fb4e63c424bcd2e2))
+- **injectable:** Make no-factory injection tokens have no .for() at all ([82aae60](https://github.com/lensapp/ogre-tools/commit/82aae60d8f86cc2904cd53e23ab3e258292673ec))
+
+### Bug Fixes
+
+- **injectable-extension-for-mobx:** Adapt to getInjectionToken2's flattened call shape ([0895699](https://github.com/lensapp/ogre-tools/commit/08956996c6b1d8ce38af7f7037084ff9af729d0e))
+- **injectable-extension-for-mobx:** Adapt to the merged InjectionToken2 type ([9bfc416](https://github.com/lensapp/ogre-tools/commit/9bfc4164cb11a8396e68c580cdb34e303b3bf865))
+- **injectable-react:** Mirror the SF-default removal for component tokens ([9c318a1](https://github.com/lensapp/ogre-tools/commit/9c318a182cdd6a6ca509e91ecd22eb3a99bb89ea))
+- **injectable:** Expose the aliasType of AbstractInjectionToken2 ([a3e82b6](https://github.com/lensapp/ogre-tools/commit/a3e82b60a44221ce56f7d8a6f4f58e0766c23405))
+- **injectable:** Remove the SF default that erased nested generic .for() factories ([3bb4780](https://github.com/lensapp/ogre-tools/commit/3bb47809a837440682d1d71e16b2bc93dc633ee9))
+- Injecting many of a v1 generic specific factory token should work ([a6a3b2b](https://github.com/lensapp/ogre-tools/commit/a6a3b2b33f2e99bc9c8e2526747536e1fed8cd35))
+- InjectWithMeta and InjectManyWithMeta typings should accept generic v1 tokens ([6bc0bc4](https://github.com/lensapp/ogre-tools/commit/6bc0bc409f068b5a6b885af6bc3c02961696bf28))
+
+### Miscellaneous Chores
+
+- Prep for major version bump ([e6e1e3e](https://github.com/lensapp/ogre-tools/commit/e6e1e3e887909480f261737135a450a0047b4528))
+
 ## [24.1.0](https://github.com/lensapp/ogre-tools/compare/v24.0.0...v24.1.0) (2026-08-25)
 
 ### Features

@@ -1,7 +1,7 @@
 {
   "name": "@lensapp/element-component",
   "private": false,
-  "version": "24.1.0",
+  "version": "25.0.0",
   "description": "Re-usable props in React",
   "type": "commonjs",
   "publishConfig": {
@@ -40,12 +40,12 @@
   },
   "devDependencies": {
     "@async-fn/jest": "^1.6.4",
-    "@lensapp/discoverable": "^24.1.0",
-    "@lensapp/infrastructure-babel-for-ts": "^24.1.0",
-    "@lensapp/infrastructure-jest": "^24.1.0",
-    "@lensapp/infrastructure-prettier": "^24.1.0",
-    "@lensapp/infrastructure-webpack-for-ts": "^24.1.0",
-    "@lensapp/ogre-test-utils": "^24.1.0",
+    "@lensapp/discoverable": "^25.0.0",
+    "@lensapp/infrastructure-babel-for-ts": "^25.0.0",
+    "@lensapp/infrastructure-jest": "^25.0.0",
+    "@lensapp/infrastructure-prettier": "^25.0.0",
+    "@lensapp/infrastructure-webpack-for-ts": "^25.0.0",
+    "@lensapp/ogre-test-utils": "^25.0.0",
     "type-fest": "^4.27.0"
   },
   "scripts": {

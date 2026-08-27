@@ -1,7 +1,7 @@
 {
   "name": "@lensapp/fp",
   "private": false,
-  "version": "24.1.0",
+  "version": "25.0.0",
   "description": "A collection of low abstraction functions in functional programming flavor",
   "files": [
     "build",
@@ -51,9 +51,9 @@
     "code-style:fix": "ogre-tools-fix-code-style"
   },
   "devDependencies": {
-    "@lensapp/infrastructure-jest": "^24.1.0",
-    "@lensapp/infrastructure-prettier": "^24.1.0",
-    "@lensapp/infrastructure-webpack-for-js": "^24.1.0",
+    "@lensapp/infrastructure-jest": "^25.0.0",
+    "@lensapp/infrastructure-prettier": "^25.0.0",
+    "@lensapp/infrastructure-webpack-for-js": "^25.0.0",
     "tsd": "^0.29.0"
   }
 }

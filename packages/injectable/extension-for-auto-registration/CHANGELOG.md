@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [25.0.0](https://github.com/lensapp/ogre-tools/compare/v24.1.0...v25.0.0) (2026-08-27)
+
+### ⚠ BREAKING CHANGES
+
+- marker on any of them. This commit's marker is what
+  makes conventional-commits tooling recommend major for the upcoming
+  release instead of minor.
+- getInjectionToken2 and getInjectionTokenComponent2
+  (injectable-react) drop their outer empty curry -- options are now the
+  direct first call, with the `.for()` factory moved out of options into
+  an optional trailing call instead of an options property:
+
+  // before
+  getInjectionToken2<F>()({ id, cardinality, specificInjectionTokenFactory: factory })
+  getInjectionTokenComponent2<Component>({ id, specificInjectionTokenFactory: factory })
+
+  // after
+  getInjectionToken2<F>({ id, cardinality })(factory)
+  getInjectionTokenComponent2<Component>({ id })(factory)
+
+getAbstractInjectionToken2 and getAbstractInjectionTokenComponent2 are
+removed. Supplying a factory to the trailing call above is what makes a
+token abstract now; omitting it makes a concrete token, same creator
+either way:
+
+// before
+getAbstractInjectionToken2<F>()({ id, cardinality, specificInjectionTokenFactory: factory })
+
+// after
+getInjectionToken2<F>({ id, cardinality })(factory)
+
+getSpecificInjectionToken2 is removed. Options carrying `speciality`
+now route through the same getInjectionToken2, which also accepts the
+trailing factory, so a specific token can itself be a family root:
+
+// before
+getSpecificInjectionToken2<F>()({ id, speciality, cardinality })
+
+// after
+getInjectionToken2<F>({ id, speciality, cardinality })(factory?)
+
+A token built with no factory now has no `.for` at all, not a working
+default: previously, omitting `specificInjectionTokenFactory` still
+produced a working recursive id-keyed `.for()` at runtime. Now,
+`getInjectionToken2<F>(options)()` (empty trailing call) yields a
+token with no `.for` property in its type -- a compile error to
+access -- and no `for` key on the runtime object. Supply a factory
+explicitly whenever `.for()` is needed, even a trivial recursive one.
+
+### Miscellaneous Chores
+
+- Prep for major version bump ([e6e1e3e](https://github.com/lensapp/ogre-tools/commit/e6e1e3e887909480f261737135a450a0047b4528))
+
 ## [24.1.0](https://github.com/lensapp/ogre-tools/compare/v24.0.0...v24.1.0) (2026-08-25)
 
 **Note:** Version bump only for package @lensapp/injectable-extension-for-auto-registration
