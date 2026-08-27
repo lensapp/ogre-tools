@@ -802,7 +802,20 @@ import {
   InjectionToken2,
   SpecificInjectionToken2,
   DiContainerForInjection2,
+  AnyConsumptionFactory,
+  DefaultSpecificFactory2,
 } from '.';
+
+// Shared default `.for(id)` factory, for tests that need a token with a
+// real, working `.for()` — a token built with no factory at all now has no
+// `.for` in its type, so tests that exercise `.for()` chaining or match
+// against a for-bearing annotation (`SingleInjectionToken2`, etc.) must give
+// one explicitly.
+const idBasedSpecificToken2 = <
+  F extends (...args: any[]) => any,
+  MF extends AnyConsumptionFactory<F>,
+  C extends Cardinality,
+>() => null as any as DefaultSpecificFactory2<F, MF, C>;
 
 // --- getInjectable2: non-parametric singleton ---
 
@@ -866,12 +879,12 @@ expectType<(x: number) => number>(di.inject(functionInstanceInjectable2));
 const handlerToken2 = getInjectionToken2<() => string>({
   id: 'handler',
   cardinality: 'one',
-})();
+})(idBasedSpecificToken2<() => string, ManyFactory<() => string>, 'one'>());
 
 const handlerManyToken2 = getInjectionToken2<() => string>({
   id: 'handler-many',
   cardinality: 'zero-or-many',
-})();
+})(idBasedSpecificToken2<() => string, ManyFactory<() => string>, 'zero-or-many'>());
 
 // The bare annotation means "a token of some cardinality", so a declared token
 // is assignable to it but not identical to it.
@@ -896,14 +909,14 @@ const userServiceToken2 = getInjectionToken2<
 >({
   id: 'user-service',
   cardinality: 'one',
-})();
+})(idBasedSpecificToken2<(userId: string) => { id: string }, ManyFactory<(userId: string) => { id: string }>, 'one'>());
 
 const userServiceManyToken2 = getInjectionToken2<
   (userId: string) => { id: string }
 >({
   id: 'user-service-many',
   cardinality: 'zero-or-many',
-})();
+})(idBasedSpecificToken2<(userId: string) => { id: string }, ManyFactory<(userId: string) => { id: string }>, 'zero-or-many'>());
 
 expectType<{ id: string }>(di.inject(userServiceToken2, 'user-123'));
 expectType<{ id: string }[]>(di.injectMany(userServiceManyToken2, 'user-123'));
@@ -1794,6 +1807,15 @@ expectType<{ someProperty: 'some-speciality' }>(
   di.inject(abstractTokenWithCurriedFactory.for('some-speciality')),
 );
 
+// abstract tokens make the factory mandatory — omitting it is a TYPE ERROR,
+// unlike the base getInjectionToken2, which allows a for-less token
+expectError(
+  getAbstractInjectionToken2<() => unknown>({
+    id: 'abstract-token-without-factory',
+    cardinality: 'zero-or-many',
+  })(),
+);
+
 // a widened `string` implementation no longer satisfies the specific token
 expectError(
   getInjectable2({
@@ -2008,7 +2030,7 @@ const taggedAbstractToken = getAbstractInjectionToken2<() => string>({
   cardinality: 'zero-or-many',
   id: 'tagged-abstract-token',
   tags: ['some-tag'],
-})();
+})(idBasedSpecificToken2<() => string, ManyFactory<() => string>, 'zero-or-many'>());
 
 expectType<string[] | undefined>(taggedAbstractToken.tags);
 
@@ -2092,22 +2114,22 @@ type GetGreeting = (name: string) => string;
 const cardinalityOneToken = getInjectionToken2<GetGreeting>({
   id: 'cardinality-one',
   cardinality: 'one',
-})();
+})(idBasedSpecificToken2<GetGreeting, ManyFactory<GetGreeting>, 'one'>());
 
 const cardinalityMaybeToken = getInjectionToken2<GetGreeting>({
   id: 'cardinality-maybe',
   cardinality: 'zero-or-one',
-})();
+})(idBasedSpecificToken2<GetGreeting, MaybeResultFactory<GetGreeting>, 'zero-or-one'>());
 
 const cardinalityManyToken = getInjectionToken2<GetGreeting>({
   id: 'cardinality-many',
   cardinality: 'zero-or-many',
-})();
+})(idBasedSpecificToken2<GetGreeting, ManyFactory<GetGreeting>, 'zero-or-many'>());
 
 const cardinalityNonEmptyManyToken = getInjectionToken2<GetGreeting>({
   id: 'cardinality-non-empty-many',
   cardinality: 'one-or-many',
-})();
+})(idBasedSpecificToken2<GetGreeting, NonEmptyManyFactory<GetGreeting>, 'one-or-many'>());
 
 // --- cardinality is mandatory ---
 
@@ -2316,7 +2338,7 @@ const abstractGenericManyToken = getAbstractInjectionToken2<
 >({
   id: 'abstract-generic-many',
   cardinality: 'zero-or-many',
-})();
+})(idBasedSpecificToken2<GetWrapped, <T>(value: T) => { wrapped: T }[], 'zero-or-many'>());
 
 // the explicit many-factory is returned verbatim through injectMany2, so `T`
 // survives injection even though the token is abstract
