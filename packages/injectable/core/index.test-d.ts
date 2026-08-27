@@ -2836,9 +2836,10 @@ expectType<'injection-token2'>(cardinalityOneToken.aliasType);
 expectType<'injection-token2'>(abstractHandlerToken.aliasType);
 expectType<true>(abstractHandlerToken.__abstract);
 
-// `.for()` children inherit it.
+// `.for()` children inherit it. A v2 token only has `.for()` when it was
+// given a factory, so the v2 assertion goes through an abstract family.
 expectType<'injection-token'>(someInjectionToken.for('a').aliasType);
-expectType<'injection-token2'>(cardinalityOneToken.for('a').aliasType);
+expectType<'injection-token2'>(abstractHandlerToken.for('a').aliasType);
 
 // Creating an alias must not require passing it.
 expectError(
