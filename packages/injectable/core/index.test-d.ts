@@ -757,8 +757,9 @@ const someInjectableForHasRegistrations = getInjectable({
   },
 });
 
-const typedSpecifier =
-  getTypedSpecifier<{ someSpeciality: 'some-type' }>()('irrelevant');
+const typedSpecifier = getTypedSpecifier<{ someSpeciality: 'some-type' }>()(
+  'irrelevant',
+);
 
 // given typed specifier, TypedSpecifier is compatible with "extends" and type inference
 expectAssignable<TypedSpecifier<string, { someSpeciality: 'some-type' }>>(
@@ -862,15 +863,15 @@ expectType<(x: number) => number>(di.inject(functionInstanceInjectable2));
 
 // A token's cardinality decides which consumption API accepts it, so a token
 // consumed both singly and as a group is two tokens.
-const handlerToken2 = getInjectionToken2<() => string>()({
+const handlerToken2 = getInjectionToken2<() => string>({
   id: 'handler',
   cardinality: 'one',
-});
+})();
 
-const handlerManyToken2 = getInjectionToken2<() => string>()({
+const handlerManyToken2 = getInjectionToken2<() => string>({
   id: 'handler-many',
   cardinality: 'zero-or-many',
-});
+})();
 
 // The bare annotation means "a token of some cardinality", so a declared token
 // is assignable to it but not identical to it.
@@ -892,22 +893,20 @@ expectError(di.inject(handlerManyToken2));
 
 const userServiceToken2 = getInjectionToken2<
   (userId: string) => { id: string }
->()({
+>({
   id: 'user-service',
   cardinality: 'one',
-});
+})();
 
 const userServiceManyToken2 = getInjectionToken2<
   (userId: string) => { id: string }
->()({
+>({
   id: 'user-service-many',
   cardinality: 'zero-or-many',
-});
+})();
 
 expectType<{ id: string }>(di.inject(userServiceToken2, 'user-123'));
-expectType<{ id: string }[]>(
-  di.injectMany(userServiceManyToken2, 'user-123'),
-);
+expectType<{ id: string }[]>(di.injectMany(userServiceManyToken2, 'user-123'));
 
 // wrong args are type errors
 expectError(di.inject(userServiceToken2));
@@ -916,20 +915,20 @@ expectError(di.inject(userServiceToken2, 42));
 // --- InjectionToken2: ManyFactory auto-derived for non-generic ---
 
 // For non-generic, ManyFactory is auto-derived: (() => string) becomes (() => string[])
-const autoManyToken = getInjectionToken2<(x: number) => string>()({
+const autoManyToken = getInjectionToken2<(x: number) => string>({
   cardinality: 'zero-or-many',
   id: 'auto-many',
-});
+})();
 
 // --- InjectionToken2: explicit ManyFactory for generic ---
 
 type WrapperFactory = <T>(value: T) => { wrapped: T };
 type WrapperManyFactory = <T>(value: T) => { wrapped: T }[];
 
-const wrapperToken2 = getInjectionToken2<WrapperFactory, WrapperManyFactory>()({
+const wrapperToken2 = getInjectionToken2<WrapperFactory, WrapperManyFactory>({
   cardinality: 'zero-or-many',
   id: 'wrapper',
-});
+})();
 
 // --- InjectionToken2: ManyFactory constraint prevents disagreement ---
 
@@ -937,10 +936,10 @@ expectError(
   getInjectionToken2<
     (x: string) => number,
     (x: number) => number[] // Error: number param doesn't match string param
-  >()({
+  >({
     id: 'bad-many',
     cardinality: 'zero-or-many',
-  }),
+  })(),
 );
 
 // --- InjectionToken2: implementing with getInjectable2 ---
@@ -971,10 +970,10 @@ interface Item {
   orderNumber: number;
 }
 
-const itemToken2 = getInjectionToken2<() => Item>()({
+const itemToken2 = getInjectionToken2<() => Item>({
   id: 'item',
   cardinality: 'one',
-});
+})();
 
 declare const myNarrowComponent: NarrowComponent;
 
@@ -1137,7 +1136,9 @@ const innerWithRegisteredInLocalScope = getInjectable2({
 const innerWithRegisteredInLocalScopeSubtree = getInjectable2({
   id: 'inner-registered-in-local-scope-subtree',
   instantiate: di => {
-    expectType<boolean>(di.registeredInLocalScopeSubtree(parametricInjectable2));
+    expectType<boolean>(
+      di.registeredInLocalScopeSubtree(parametricInjectable2),
+    );
     expectType<boolean>(di.registeredInLocalScopeSubtree(handlerToken2));
     expectType<boolean>(di.registeredInLocalScopeSubtree(someInjectable));
     expectType<boolean>(di.registeredInLocalScopeSubtree(someInjectionToken));
@@ -1170,10 +1171,10 @@ const generalToken2WithSpecifier = getInjectionToken2<
     // token's own cardinality is.
     'one'
   >
->()({
+>({
   id: 'general-token2-with-specifier',
   cardinality: 'zero-or-many',
-});
+})();
 
 const someTypedSpecifier2 = getTypedSpecifier<{
   someType: string;
@@ -1415,13 +1416,14 @@ const generalBrandedWrapperToken2 = getInjectionToken2<
     <T>(value: T) => { wrapped: T; brand: TypedSpecifierType<'brand', S> },
     <T>(value: T) => { wrapped: T; brand: TypedSpecifierType<'brand', S> }[]
   >
->()({
+>({
   id: 'general-branded-wrapper',
   cardinality: 'zero-or-many',
-});
+})();
 
-const primaryBrandSpecifier =
-  getTypedSpecifier<{ brand: 'primary' }>()('primary-brand');
+const primaryBrandSpecifier = getTypedSpecifier<{ brand: 'primary' }>()(
+  'primary-brand',
+);
 
 const primaryWrapperToken = generalBrandedWrapperToken2.for(
   primaryBrandSpecifier,
@@ -1621,21 +1623,21 @@ expectError(
 
 // ---- AbstractInjectionToken2 ----
 
-const abstractHandlerToken = getAbstractInjectionToken2<
-  (name: string) => void
->()({
-  id: 'abstract-handler',
-  cardinality: 'zero-or-many',
-
+const abstractHandlerToken = getAbstractInjectionToken2<(name: string) => void>(
+  {
+    id: 'abstract-handler',
+    cardinality: 'zero-or-many',
+  },
+)(
   // Each specific token of this family is implemented once, which the factory
   // that builds those tokens declares.
-  specificInjectionTokenFactory: (specifier: string) =>
+  (specifier: string) =>
     getSpecificInjectionToken2<(name: string) => void>()({
       id: specifier,
       speciality: specifier,
       cardinality: 'one',
     }),
-});
+);
 
 // abstract token has correct type
 expectAssignable<AbstractInjectionToken2<(name: string) => void>>(
@@ -1728,10 +1730,10 @@ const abstractTokenWithSpecifier = getAbstractInjectionToken2<
     any,
     'one'
   >
->()({
+>({
   id: 'abstract-token2-with-specifier',
   cardinality: 'zero-or-many',
-});
+})();
 
 const someAbstractTypedSpecifier = getTypedSpecifier<{
   someAbstractType: string;
@@ -1775,7 +1777,9 @@ expectError(di.inject2(abstractTokenWithSpecifier));
 
 // --- getAbstractInjectionToken2(options)(specificInjectionTokenFactory): non-curried form ---
 
-const abstractTokenWithCurriedFactory = getAbstractInjectionToken2<() => unknown>({
+const abstractTokenWithCurriedFactory = getAbstractInjectionToken2<
+  () => unknown
+>({
   id: 'abstract-token-with-curried-factory',
   cardinality: 'zero-or-many',
 })(<Speciality extends string>(speciality: Speciality) =>
@@ -1795,7 +1799,9 @@ expectError(
   getInjectable2({
     id: 'bad-impl-non-curried',
     injectionToken: abstractTokenWithCurriedFactory.for('some-speciality'),
-    instantiate: () => (): { someProperty: string } => ({ someProperty: 'anything' }),
+    instantiate: () => (): { someProperty: string } => ({
+      someProperty: 'anything',
+    }),
   }),
 );
 
@@ -1842,7 +1848,9 @@ expectError(
   getInjectable2({
     id: 'bad-impl-non-abstract-non-curried',
     injectionToken: tokenWithCurriedFactory.for('some-speciality'),
-    instantiate: () => (): { someProperty: string } => ({ someProperty: 'anything' }),
+    instantiate: () => (): { someProperty: string } => ({
+      someProperty: 'anything',
+    }),
   }),
 );
 
@@ -1980,36 +1988,36 @@ expectError(
   }),
 );
 
-const taggedV2Token = getInjectionToken2<() => string>()({
+const taggedV2Token = getInjectionToken2<() => string>({
   cardinality: 'zero-or-many',
   id: 'tagged-v2-token',
   tags: ['some-tag'],
-});
+})();
 
 expectType<string[] | undefined>(taggedV2Token.tags);
 
 expectError(
-  getInjectionToken2<() => string>()({
-  cardinality: 'zero-or-many',
+  getInjectionToken2<() => string>({
+    cardinality: 'zero-or-many',
     id: 'badly-tagged-v2-token',
     tags: [42],
-  }),
+  })(),
 );
 
-const taggedAbstractToken = getAbstractInjectionToken2<() => string>()({
+const taggedAbstractToken = getAbstractInjectionToken2<() => string>({
   cardinality: 'zero-or-many',
   id: 'tagged-abstract-token',
   tags: ['some-tag'],
-});
+})();
 
 expectType<string[] | undefined>(taggedAbstractToken.tags);
 
 expectError(
-  getAbstractInjectionToken2<() => string>()({
-  cardinality: 'zero-or-many',
+  getAbstractInjectionToken2<() => string>({
+    cardinality: 'zero-or-many',
     id: 'badly-tagged-abstract-token',
     tags: [42],
-  }),
+  })(),
 );
 
 expectType<'injectionToken'>(injectionTokenTag);
@@ -2081,37 +2089,37 @@ expectError(
 
 type GetGreeting = (name: string) => string;
 
-const cardinalityOneToken = getInjectionToken2<GetGreeting>()({
+const cardinalityOneToken = getInjectionToken2<GetGreeting>({
   id: 'cardinality-one',
   cardinality: 'one',
-});
+})();
 
-const cardinalityMaybeToken = getInjectionToken2<GetGreeting>()({
+const cardinalityMaybeToken = getInjectionToken2<GetGreeting>({
   id: 'cardinality-maybe',
   cardinality: 'zero-or-one',
-});
+})();
 
-const cardinalityManyToken = getInjectionToken2<GetGreeting>()({
+const cardinalityManyToken = getInjectionToken2<GetGreeting>({
   id: 'cardinality-many',
   cardinality: 'zero-or-many',
-});
+})();
 
-const cardinalityNonEmptyManyToken = getInjectionToken2<GetGreeting>()({
+const cardinalityNonEmptyManyToken = getInjectionToken2<GetGreeting>({
   id: 'cardinality-non-empty-many',
   cardinality: 'one-or-many',
-});
+})();
 
 // --- cardinality is mandatory ---
 
 // given no cardinality, creating a token is not OK
-expectError(getInjectionToken2<GetGreeting>()({ id: 'no-cardinality' }));
+expectError(getInjectionToken2<GetGreeting>({ id: 'no-cardinality' })());
 
 // given an unknown cardinality, creating a token is not OK
 expectError(
-  getInjectionToken2<GetGreeting>()({
+  getInjectionToken2<GetGreeting>({
     id: 'unknown-cardinality',
     cardinality: 'sometimes',
-  }),
+  })(),
 );
 
 // given a specific token built with an unknown cardinality, it is not OK
@@ -2134,12 +2142,12 @@ expectType<Cardinality | undefined>(
 // given options built up separately, whose cardinality widened to `string`,
 // creating a token is not OK
 const widenedOptions = { id: 'widened', cardinality: 'one' };
-expectError(getInjectionToken2<GetGreeting>()(widenedOptions));
+expectError(getInjectionToken2<GetGreeting>(widenedOptions)());
 
 // given options frozen as literals, creating a token is OK
 const constOptions = { id: 'const-options', cardinality: 'one' } as const;
 expectType<'one' | undefined>(
-  getInjectionToken2<GetGreeting>()(constOptions).cardinality,
+  getInjectionToken2<GetGreeting>(constOptions)().cardinality,
 );
 
 // --- the declared cardinality is carried on the token ---
@@ -2147,16 +2155,12 @@ expectType<'one' | undefined>(
 expectType<'one' | undefined>(cardinalityOneToken.cardinality);
 expectType<'zero-or-one' | undefined>(cardinalityMaybeToken.cardinality);
 expectType<'zero-or-many' | undefined>(cardinalityManyToken.cardinality);
-expectType<'one-or-many' | undefined>(
-  cardinalityNonEmptyManyToken.cardinality,
-);
+expectType<'one-or-many' | undefined>(cardinalityNonEmptyManyToken.cardinality);
 
 // --- each cardinality gets the consumption shape it declares ---
 
 expectType<ManyFactory<GetGreeting>>(cardinalityManyToken.manyTemplate);
-expectType<MaybeResultFactory<GetGreeting>>(
-  cardinalityMaybeToken.manyTemplate,
-);
+expectType<MaybeResultFactory<GetGreeting>>(cardinalityMaybeToken.manyTemplate);
 expectType<NonEmptyManyFactory<GetGreeting>>(
   cardinalityNonEmptyManyToken.manyTemplate,
 );
@@ -2171,9 +2175,7 @@ expectError(di.injectMany(cardinalityOneToken, 'some-name'));
 expectType<string[]>(di.injectMany(cardinalityManyToken, 'some-name'));
 expectError(di.inject(cardinalityManyToken, 'some-name'));
 
-expectType<string[]>(
-  di.injectMany(cardinalityNonEmptyManyToken, 'some-name'),
-);
+expectType<string[]>(di.injectMany(cardinalityNonEmptyManyToken, 'some-name'));
 expectError(di.inject(cardinalityNonEmptyManyToken, 'some-name'));
 
 // given cardinality 'zero-or-one', neither single nor many injection accepts it
@@ -2220,23 +2222,24 @@ expectType<NonEmptyManyInjectionToken2<GetGreeting>>(
 // --- `.for()` children carry the cardinality ---
 
 expectType<'one' | undefined>(cardinalityOneToken.for('a').cardinality);
-expectType<'one' | undefined>(cardinalityOneToken.for('a').for('b').cardinality);
+expectType<'one' | undefined>(
+  cardinalityOneToken.for('a').for('b').cardinality,
+);
 expectType<string>(di.inject(cardinalityOneToken.for('a'), 'some-name'));
 expectError(di.injectMany(cardinalityOneToken.for('a'), 'some-name'));
 
 // given a factory that declares a cardinality for the tokens it builds,
 // `.for()` children carry that one instead of the general token's
-const heteroCardinalityToken = getInjectionToken2<GetGreeting>()({
+const heteroCardinalityToken = getInjectionToken2<GetGreeting>({
   id: 'hetero-cardinality',
   cardinality: 'zero-or-many',
-
-  specificInjectionTokenFactory: (specifier: string) =>
-    getSpecificInjectionToken2<GetGreeting>()({
-      id: specifier,
-      speciality: specifier,
-      cardinality: 'one',
-    }),
-});
+})((specifier: string) =>
+  getSpecificInjectionToken2<GetGreeting>()({
+    id: specifier,
+    speciality: specifier,
+    cardinality: 'one',
+  }),
+);
 
 expectType<'zero-or-many' | undefined>(heteroCardinalityToken.cardinality);
 expectType<'one' | undefined>(heteroCardinalityToken.for('a').cardinality);
@@ -2263,11 +2266,10 @@ declare function someSpecificTokenFactory(
   'zero-or-many'
 >;
 
-const tokenWithInferredSpecificFactory = getInjectionToken2<GetGreeting>()({
+const tokenWithInferredSpecificFactory = getInjectionToken2<GetGreeting>({
   id: 'inferred-specific-factory',
   cardinality: 'zero-or-many',
-  specificInjectionTokenFactory: someSpecificTokenFactory,
-});
+})(someSpecificTokenFactory);
 
 expectType<typeof someSpecificTokenFactory>(
   tokenWithInferredSpecificFactory.for,
@@ -2283,18 +2285,18 @@ type GetWrapped = <T>(value: T) => { wrapped: T };
 const genericManyToken = getInjectionToken2<
   GetWrapped,
   <T>(value: T) => { wrapped: T }[]
->()({
+>({
   id: 'generic-many',
   cardinality: 'zero-or-many',
-});
+})();
 
 const genericNonEmptyManyToken = getInjectionToken2<
   GetWrapped,
   <T>(value: T) => [{ wrapped: T }, ...{ wrapped: T }[]]
->()({
+>({
   id: 'generic-non-empty-many',
   cardinality: 'one-or-many',
-});
+})();
 
 // the explicit many-factory is returned verbatim, so `T` survives injection
 const getWrappedMany = di.injectMany2(genericManyToken);
@@ -2311,10 +2313,10 @@ expectType<[{ wrapped: string }, ...{ wrapped: string }[]]>(
 const abstractGenericManyToken = getAbstractInjectionToken2<
   GetWrapped,
   <T>(value: T) => { wrapped: T }[]
->()({
+>({
   id: 'abstract-generic-many',
   cardinality: 'zero-or-many',
-});
+})();
 
 // the explicit many-factory is returned verbatim through injectMany2, so `T`
 // survives injection even though the token is abstract
@@ -2329,106 +2331,105 @@ expectType<{ wrapped: number }[]>(di.injectMany2(abstractGenericManyToken)(42));
 
 type WrappedManyFactory = <T>(value: T) => { wrapped: T }[];
 type WrappedMaybeFactory = <T>(value: T) => { wrapped: T } | undefined;
-type WrappedNonEmptyManyFactory = <T>(value: T) => [
-  { wrapped: T },
-  ...{ wrapped: T }[],
-];
+type WrappedNonEmptyManyFactory = <T>(
+  value: T,
+) => [{ wrapped: T }, ...{ wrapped: T }[]];
 // Yields a value and never nothing — the shape a maybe-token must not have.
 type WrappedBareFactory = <T>(value: T) => { wrapped: T };
 
 // given cardinality 'one', a many-shaped slot is OK and the others are not
-getInjectionToken2<GetWrapped, WrappedManyFactory>()({
+getInjectionToken2<GetWrapped, WrappedManyFactory>({
   id: 'one-with-many-shape',
   cardinality: 'one',
-});
-getInjectionToken2<GetWrapped, WrappedNonEmptyManyFactory>()({
+})();
+getInjectionToken2<GetWrapped, WrappedNonEmptyManyFactory>({
   id: 'one-with-non-empty-many-shape',
   cardinality: 'one',
-});
+})();
 expectError(
-  getInjectionToken2<GetWrapped, WrappedMaybeFactory>()({
+  getInjectionToken2<GetWrapped, WrappedMaybeFactory>({
     id: 'one-with-maybe-shape',
     cardinality: 'one',
-  }),
+  })(),
 );
 expectError(
-  getInjectionToken2<GetWrapped, WrappedBareFactory>()({
+  getInjectionToken2<GetWrapped, WrappedBareFactory>({
     id: 'one-with-bare-shape',
     cardinality: 'one',
-  }),
+  })(),
 );
 
 // given cardinality 'zero-or-one', only a shape that admits undefined is OK —
 // the factory is handed back verbatim, so one that always yields a value would
 // deny the very absence the cardinality is about
-getInjectionToken2<GetWrapped, WrappedMaybeFactory>()({
+getInjectionToken2<GetWrapped, WrappedMaybeFactory>({
   id: 'maybe-with-maybe-shape',
   cardinality: 'zero-or-one',
-});
+})();
 expectError(
-  getInjectionToken2<GetWrapped, WrappedBareFactory>()({
+  getInjectionToken2<GetWrapped, WrappedBareFactory>({
     id: 'maybe-with-bare-shape',
     cardinality: 'zero-or-one',
-  }),
+  })(),
 );
 expectError(
-  getInjectionToken2<GetWrapped, WrappedManyFactory>()({
+  getInjectionToken2<GetWrapped, WrappedManyFactory>({
     id: 'maybe-with-many-shape',
     cardinality: 'zero-or-one',
-  }),
+  })(),
 );
 expectError(
-  getInjectionToken2<GetWrapped, WrappedNonEmptyManyFactory>()({
+  getInjectionToken2<GetWrapped, WrappedNonEmptyManyFactory>({
     id: 'maybe-with-non-empty-many-shape',
     cardinality: 'zero-or-one',
-  }),
+  })(),
 );
 
 // given cardinality 'zero-or-many', array-yielding shapes are OK
-getInjectionToken2<GetWrapped, WrappedManyFactory>()({
+getInjectionToken2<GetWrapped, WrappedManyFactory>({
   id: 'many-with-many-shape',
   cardinality: 'zero-or-many',
-});
-getInjectionToken2<GetWrapped, WrappedNonEmptyManyFactory>()({
+})();
+getInjectionToken2<GetWrapped, WrappedNonEmptyManyFactory>({
   id: 'many-with-non-empty-many-shape',
   cardinality: 'zero-or-many',
-});
+})();
 expectError(
-  getInjectionToken2<GetWrapped, WrappedMaybeFactory>()({
+  getInjectionToken2<GetWrapped, WrappedMaybeFactory>({
     id: 'many-with-maybe-shape',
     cardinality: 'zero-or-many',
-  }),
+  })(),
 );
 expectError(
-  getInjectionToken2<GetWrapped, WrappedBareFactory>()({
+  getInjectionToken2<GetWrapped, WrappedBareFactory>({
     id: 'many-with-bare-shape',
     cardinality: 'zero-or-many',
-  }),
+  })(),
 );
 
 // given cardinality 'one-or-many', only a non-empty tuple is OK — a plain
 // array would deny the guarantee that indexing the first element is safe
-getInjectionToken2<GetWrapped, WrappedNonEmptyManyFactory>()({
+getInjectionToken2<GetWrapped, WrappedNonEmptyManyFactory>({
   id: 'non-empty-many-with-non-empty-many-shape',
   cardinality: 'one-or-many',
-});
+})();
 expectError(
-  getInjectionToken2<GetWrapped, WrappedManyFactory>()({
+  getInjectionToken2<GetWrapped, WrappedManyFactory>({
     id: 'non-empty-many-with-many-shape',
     cardinality: 'one-or-many',
-  }),
+  })(),
 );
 expectError(
-  getInjectionToken2<GetWrapped, WrappedMaybeFactory>()({
+  getInjectionToken2<GetWrapped, WrappedMaybeFactory>({
     id: 'non-empty-many-with-maybe-shape',
     cardinality: 'one-or-many',
-  }),
+  })(),
 );
 expectError(
-  getInjectionToken2<GetWrapped, WrappedBareFactory>()({
+  getInjectionToken2<GetWrapped, WrappedBareFactory>({
     id: 'non-empty-many-with-bare-shape',
     cardinality: 'one-or-many',
-  }),
+  })(),
 );
 
 // the same holds when the `.for()` factory's type is given too
@@ -2436,19 +2437,26 @@ expectError(
   getInjectionToken2<
     GetWrapped,
     WrappedBareFactory,
-    (id: string) => SpecificInjectionToken2<GetWrapped, WrappedBareFactory, any, 'zero-or-one'>
-  >()({
+    (
+      id: string,
+    ) => SpecificInjectionToken2<
+      GetWrapped,
+      WrappedBareFactory,
+      any,
+      'zero-or-one'
+    >
+  >({
     id: 'maybe-with-bare-shape-and-specific-factory',
     cardinality: 'zero-or-one',
-  }),
+  })(),
 );
 
 // and a mismatch in the parameters, not just the result, is still caught
 expectError(
-  getInjectionToken2<(x: string) => number, (x: number) => number[]>()({
+  getInjectionToken2<(x: string) => number, (x: number) => number[]>({
     id: 'mismatched-parameters',
     cardinality: 'zero-or-many',
-  }),
+  })(),
 );
 
 // --- implementing a token of any cardinality ---
@@ -2486,7 +2494,9 @@ expectError(
 expectType<MaybeResultFactory<GetGreeting>>(
   di.injectMaybe2(cardinalityMaybeToken),
 );
-expectType<string | undefined>(di.injectMaybe2(cardinalityMaybeToken)('a-name'));
+expectType<string | undefined>(
+  di.injectMaybe2(cardinalityMaybeToken)('a-name'),
+);
 
 // no tuple and no destructuring at the call site
 const maybeGreeting = di.injectMaybe2(cardinalityMaybeToken)('a-name');
@@ -2538,10 +2548,10 @@ expectType<string | undefined>(
 const genericMaybeToken = getInjectionToken2<
   GetWrapped,
   <T>(value: T) => { wrapped: T } | undefined
->()({
+>({
   id: 'generic-maybe',
   cardinality: 'zero-or-one',
-});
+})();
 
 const getWrappedMaybe = di.injectMaybe2(genericMaybeToken);
 expectType<{ wrapped: string } | undefined>(
@@ -2567,35 +2577,35 @@ getInjectable2({
 
 // ==== Consumption declarations ====
 
-const consumedOneToken = getInjectionToken2<GetGreeting>()({
+const consumedOneToken = getInjectionToken2<GetGreeting>({
   id: 'consumed-one',
   cardinality: 'one',
-});
+})();
 
-const consumedManyToken = getInjectionToken2<GetGreeting>()({
+const consumedManyToken = getInjectionToken2<GetGreeting>({
   id: 'consumed-many',
   cardinality: 'zero-or-many',
-});
+})();
 
-const consumedMaybeToken = getInjectionToken2<GetGreeting>()({
+const consumedMaybeToken = getInjectionToken2<GetGreeting>({
   id: 'consumed-maybe',
   cardinality: 'zero-or-one',
-});
+})();
 
-const undeclaredToken = getInjectionToken2<(count: number) => boolean>()({
+const undeclaredToken = getInjectionToken2<(count: number) => boolean>({
   id: 'undeclared',
   cardinality: 'one',
-});
+})();
 
-const undeclaredManyToken = getInjectionToken2<(count: number) => boolean>()({
+const undeclaredManyToken = getInjectionToken2<(count: number) => boolean>({
   id: 'undeclared-many',
   cardinality: 'zero-or-many',
-});
+})();
 
-const undeclaredMaybeToken = getInjectionToken2<(count: number) => boolean>()({
+const undeclaredMaybeToken = getInjectionToken2<(count: number) => boolean>({
   id: 'undeclared-maybe',
   cardinality: 'zero-or-one',
-});
+})();
 
 declare const someConsumedInjectable: Injectable2<(n: number) => string>;
 
@@ -2665,17 +2675,16 @@ getInjectable2({
 
 // --- declaring a token covers its `.for()` derivatives ---
 
-const familyToken = getInjectionToken2<GetGreeting>()({
+const familyToken = getInjectionToken2<GetGreeting>({
   id: 'family',
   cardinality: 'zero-or-many',
-
-  specificInjectionTokenFactory: (specifier: string) =>
-    getSpecificInjectionToken2<GetGreeting>()({
-      id: specifier,
-      speciality: specifier,
-      cardinality: 'one',
-    }),
-});
+})((specifier: string) =>
+  getSpecificInjectionToken2<GetGreeting>()({
+    id: specifier,
+    speciality: specifier,
+    cardinality: 'one',
+  }),
+);
 
 getInjectable2({
   id: 'declaring-family',
@@ -2768,10 +2777,10 @@ getInjectable2({
 
 // This is why the container enforces declarations at runtime too: nothing at
 // the type level separates two tokens with the same factory and cardinality.
-const identicallyShapedToken = getInjectionToken2<GetGreeting>()({
+const identicallyShapedToken = getInjectionToken2<GetGreeting>({
   id: 'identically-shaped',
   cardinality: 'one',
-});
+})();
 
 getInjectable2({
   id: 'declaring-shape',
@@ -2791,9 +2800,7 @@ expectType<number>(di.validate().verifiedInjectables.count);
 expectType<string[]>(di.validate().verifiedInjectables.ids);
 expectType<number>(di.validate().unverifiedInjectables.count);
 expectType<string[]>(di.validate().unverifiedInjectables.ids);
-expectType<UnverifiableConsumption[]>(
-  di.validate().unverifiableConsumptions,
-);
+expectType<UnverifiableConsumption[]>(di.validate().unverifiableConsumptions);
 expectType<string>(di.validate().unverifiableConsumptions[0].injectableId);
 expectType<string>(di.validate().unverifiableConsumptions[0].consumptionId);
 
