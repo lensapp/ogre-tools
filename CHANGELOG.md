@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.0.0](https://github.com/lensapp/ogre-tools/compare/v25.0.0...v26.0.0) (2026-08-31)
+
+### ⚠ BREAKING CHANGES
+
+- **injectable:** the positional type-parameter forms of
+  InjectionToken2, SpecificInjectionToken2 and getInjectionToken2 are
+  removed.
+
+Before:
+InjectionToken2<F, MF, undefined, 'one'>
+getInjectionToken2<F>({ id, cardinality: 'one' })()
+getInjectionToken2<F, MF>({ id, cardinality: 'many' })()
+getInjectionToken2<F, MF, SF>({ id, ... })(factory?)
+
+After:
+InjectionToken2<{ singleFactory: F; manyFactory: MF;
+specificTokenFactory: undefined; cardinality: 'one' }>
+getInjectionToken2<{ singleFactory: F }>(
+{ id, cardinality: 'one' })()
+getInjectionToken2<{ singleFactory: F; manyFactory: MF }>(
+{ id, cardinality: 'zero-or-many' })()
+const factory: SF = ...;
+getInjectionToken2<{ singleFactory: F; manyFactory: MF }>(
+{ id, cardinality: 'one' })(factory)
+
+The bag's mandate now applies to every token: a generic (or
+overloaded) singleFactory requires explicit manyFactory,
+singleMetaFactory and manyMetaFactory slots — the positional creators
+that skipped the meta mandate are gone, so generic-contract tokens
+must spell all four factory slots. Zero-type-argument
+getInjectionToken2 calls no longer compile: a creator call states its
+contract. InjectionToken2FactoryCall and
+SpecificInjectionToken2FactoryCall are removed; the bag creator
+returns InjectionToken2FactoryCallFromSlots and
+SpecificInjectionToken2FactoryCallFromSlots.
+
+### Features
+
+- **injectable, injectable-extension-for-mobx:** Add injectMaybeWithMeta ([6189b64](https://github.com/lensapp/ogre-tools/commit/6189b645751127de0f2eecabb0b549cae8dedf62))
+- **injectable, injectable-extension-for-mobx:** Add with-meta factory slots to v2 tokens ([f36abfa](https://github.com/lensapp/ogre-tools/commit/f36abfac6d089fc0fc15f90d2bbdc07c7a7a9bcc))
+- **injectable:** Accept a named type-parameter bag on v2 token types and creators ([5938a73](https://github.com/lensapp/ogre-tools/commit/5938a73866ec6f58100322241728028f69c0204c))
+- **injectable:** Give zero-or-one its own maybeFactory and maybeMetaFactory slots ([0387bad](https://github.com/lensapp/ogre-tools/commit/0387badbe4003fdea96ef9eb8c163bd973df4895))
+- **injectable:** Retire the positional type parameters on v2 token types and creators ([04aa83e](https://github.com/lensapp/ogre-tools/commit/04aa83e46a73853eec55b15036efd1c18e4f3c2f))
+
+### Bug Fixes
+
+- **injectable-extension-for-mobx:** Respect a v2 token's custom multi-factory ([512d909](https://github.com/lensapp/ogre-tools/commit/512d90913c75f104ee425a58ed4518dbf0c5e982))
+- **injectable, injectable-extension-for-mobx:** Normalize v1 injectMany to a plain array ([07fa368](https://github.com/lensapp/ogre-tools/commit/07fa3689860c580456935819a29458b778a6b8d6))
+- **injectable:** Gate withMeta consumption types, rename Scoped* to Consumption* ([63c232a](https://github.com/lensapp/ogre-tools/commit/63c232a7f9dea219f6db7d93840fd766020b7e02))
+- **injectable:** Keep ToWithMetaManyFactory's published base-factory semantics ([8cf5843](https://github.com/lensapp/ogre-tools/commit/8cf58438d1c8a3e9556eb73585293bd06a7fdab4))
+- InjectMany(WithMeta?) should be correctly typed for v2 MF tokens ([cc80a03](https://github.com/lensapp/ogre-tools/commit/cc80a03bf256f966c4e1bb8db8753c642fe7d433))
+
 ## [25.0.0](https://github.com/lensapp/ogre-tools/compare/v24.1.0...v25.0.0) (2026-08-27)
 
 ### ⚠ BREAKING CHANGES

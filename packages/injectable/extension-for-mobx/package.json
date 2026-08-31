@@ -1,7 +1,7 @@
 {
   "name": "@lensapp/injectable-extension-for-mobx",
   "private": false,
-  "version": "25.0.0",
+  "version": "26.0.0",
   "description": "MobX support for Injectable in Ogre Tools",
   "files": [
     "build",
@@ -52,10 +52,10 @@
     "code-style:fix": "ogre-tools-fix-code-style"
   },
   "devDependencies": {
-    "@lensapp/infrastructure-babel-for-js": "^25.0.0",
-    "@lensapp/infrastructure-jest": "^25.0.0",
-    "@lensapp/infrastructure-prettier": "^25.0.0",
-    "@lensapp/infrastructure-webpack-for-js": "^25.0.0",
+    "@lensapp/infrastructure-babel-for-js": "^26.0.0",
+    "@lensapp/infrastructure-jest": "^26.0.0",
+    "@lensapp/infrastructure-prettier": "^26.0.0",
+    "@lensapp/infrastructure-webpack-for-js": "^26.0.0",
     "lodash": "^4.17.21",
     "tsd": "^0.29.0"
   }

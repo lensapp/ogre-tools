@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.0.0](https://github.com/lensapp/ogre-tools/compare/v25.0.0...v26.0.0) (2026-08-31)
+
+### ⚠ BREAKING CHANGES
+
+- **injectable:** the positional type-parameter forms of
+  InjectionToken2, SpecificInjectionToken2 and getInjectionToken2 are
+  removed.
+
+Before:
+InjectionToken2<F, MF, undefined, 'one'>
+getInjectionToken2<F>({ id, cardinality: 'one' })()
+getInjectionToken2<F, MF>({ id, cardinality: 'many' })()
+getInjectionToken2<F, MF, SF>({ id, ... })(factory?)
+
+After:
+InjectionToken2<{ singleFactory: F; manyFactory: MF;
+specificTokenFactory: undefined; cardinality: 'one' }>
+getInjectionToken2<{ singleFactory: F }>(
+{ id, cardinality: 'one' })()
+getInjectionToken2<{ singleFactory: F; manyFactory: MF }>(
+{ id, cardinality: 'zero-or-many' })()
+const factory: SF = ...;
+getInjectionToken2<{ singleFactory: F; manyFactory: MF }>(
+{ id, cardinality: 'one' })(factory)
+
+The bag's mandate now applies to every token: a generic (or
+overloaded) singleFactory requires explicit manyFactory,
+singleMetaFactory and manyMetaFactory slots — the positional creators
+that skipped the meta mandate are gone, so generic-contract tokens
+must spell all four factory slots. Zero-type-argument
+getInjectionToken2 calls no longer compile: a creator call states its
+contract. InjectionToken2FactoryCall and
+SpecificInjectionToken2FactoryCall are removed; the bag creator
+returns InjectionToken2FactoryCallFromSlots and
+SpecificInjectionToken2FactoryCallFromSlots.
+
+### Features
+
+- **injectable:** Retire the positional type parameters on v2 token types and creators ([04aa83e](https://github.com/lensapp/ogre-tools/commit/04aa83e46a73853eec55b15036efd1c18e4f3c2f))
+
 ## [25.0.0](https://github.com/lensapp/ogre-tools/compare/v24.1.0...v25.0.0) (2026-08-27)
 
 ### ⚠ BREAKING CHANGES

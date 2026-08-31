@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.0.0](https://github.com/lensapp/ogre-tools/compare/v25.0.0...v26.0.0) (2026-08-31)
+
+**Note:** Version bump only for package @lensapp/fp
+
 ## [25.0.0](https://github.com/lensapp/ogre-tools/compare/v24.1.0...v25.0.0) (2026-08-27)
 
 **Note:** Version bump only for package @lensapp/fp
